@@ -44,7 +44,6 @@ class State:
             new_st = self.clone()
             g1, g2 = sample(new_st.groups, 2)
             st1, st2 = new_st.sample_from_group(g1, 1), new_st.sample_from_group(g2, 1)
-            print(st1, st2)
             new_st.mutate_state(st1, st2)
             n.append(new_st)
 
