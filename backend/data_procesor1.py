@@ -99,6 +99,7 @@ def data_performing(df, interesting_atribute, relevant_weights, dict_parser_stra
     relevant_data = df.loc[: ,interesting_atribute]
     for atribute_name in dict_parser_strategy:
         relevant_data[atribute_name] = dict_parsers_global[dict_parser_strategy[atribute_name]](relevant_data[atribute_name])
+    relevant_data = fill_na(relevant_data)
     relevant_data = pd.get_dummies(relevant_data)
     header = relevant_data.columns.values
     sc = StandardScaler()
