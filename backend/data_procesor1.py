@@ -1,5 +1,31 @@
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+import numpy as np
+from random import random
+
+def fill_na(data):
+    dict_values_to_freq = {}
+    for feature in data.columns:
+        dict_values_to_freq[feature] = {}
+        for i, row in data.iterrows():
+            if pd.isna(row[feature]):
+                continue
+            else:
+                if row[feature] not in dict_values_to_freq[feature]:
+                    dict_values_to_freq[feature][row[feature]] = 0
+                dict_values_to_freq[feature][row[feature]] += 1
+        for value in dict_values_to_freq[feature]:
+            dict_values_to_freq[feature][value] = dict_values_to_freq[feature][value]/(len(data) - data[feature].isna().sum())
+        for i, row in data.iterrows():
+            if pd.isna(row[feature]):
+                u = random()
+                acc_prob = 0
+                for value in dict_values_to_freq[feature]:
+                    acc_prob += dict_values_to_freq[feature][value]
+                    if u <= acc_prob:
+                        data.loc[i,feature] = value
+                        break
+    return data
 
 def municipality_raw_parser(municipality_column):
     """
