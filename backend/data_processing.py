@@ -6,6 +6,10 @@ import numpy as np
 from random import random
 
 def fill_na(data):
+    """
+    Asigna a los valores nan de un feature determinado un valor de los que este feature puede tomar utilizando 
+    la probabilidad de ocurrencia de cada uno de esos valores a partir de una función de probabilidad
+    """
     dict_values_to_freq = {}
     for feature in data.columns:
         dict_values_to_freq[feature] = {}
