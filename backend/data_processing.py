@@ -39,9 +39,9 @@ def values_fill_na(data:DataFrame):
     data-> data frama de pandas(data de entrada completa antes de dummy)
     """
     types = data.dtypes
-    for i in types:
+    for i in range(len(types)):
         if types[i] == np.int64 or types[i] == np.float64:
-            data[i].fillna(data[i].mean())
+            data[data.columns.values[i]].fillna(data[data.columns.values[i]].mean())
     return data
 
 def precomputing_nominal_fill_na(data:DataFrame):
@@ -72,13 +72,15 @@ def nominal_fill_na(data:DataFrame, dict_values_to_prob:Dict, dict_atribute_rows
     dict_values_to_prob -> diccionario atributo : (dict valor: probabilidad)
     dict_atribute_rowsnan -> diccionario atributo : lista de filas que tenian nan
     """
-    for feature, rows in dict_atribute_rowsnan:
+    for feature in dict_atribute_rowsnan:
+        rows = dict_atribute_rowsnan[feature]
         if len(rows) == 0:
             continue
         for row in rows:
-            for value, freq in dict_values_to_prob[feature]:
+            for value in dict_values_to_prob[feature]:
+                prob = dict_values_to_prob[feature][value]
                 column_name = feature + "_" + value
-                data[row,column_name] = freq
+                data[row,column_name] = prob
     return data
 
 

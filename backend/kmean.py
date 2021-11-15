@@ -9,9 +9,8 @@ def Get_Groups_with_kmean(dataset, number_of_groups):
     kmean para agrupar estos estudiantes en grupos afines(clusterizar) y a partir de estos grupos afines se reparten 
     de forma equitativa entre los grupos a crear
     """
-    kmeans = KMeans(n_clusters= number_of_groups+3, init='k-means++')
+    kmeans = KMeans(n_clusters= number_of_groups*2, init='k-means++')
     kmeans.fit(dataset)
-    # print(kmeans.inertia_)
     clusters = {}
     for i,label in enumerate(kmeans.labels_):
         if label not in clusters:
