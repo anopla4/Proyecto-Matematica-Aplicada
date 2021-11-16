@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from data_processing import data_performing
-from kmean import Get_Groups_with_kmean
+from kmean import get_groups_with_kmean
 
 data = pd.read_excel("1RO CC 2021.xlsx")
 names = np.array(data["Nombre"] + " " + data["Apellidos"])
@@ -22,7 +22,7 @@ data_transf = data_performing(
     {"Municipio": "municipality_raw_parser"},
 )
 
-groups = Get_Groups_with_kmean(data_transf, 6)
+groups = get_groups_with_kmean(data_transf, 6)
 aux = 0
 for i, group in enumerate(groups):
     m = 0
