@@ -41,7 +41,7 @@ def values_fill_na(data:DataFrame):
     types = data.dtypes
     for i in range(len(types)):
         if types[i] == np.int64 or types[i] == np.float64:
-            data[data.columns.values[i]].fillna(data[data.columns.values[i]].mean())
+            data.loc[:,data.columns.values[i]] =data.loc[:,data.columns.values[i]].fillna(data.loc[:,data.columns.values[i]].mean())
     return data
 
 def precomputing_nominal_fill_na(data:DataFrame):
@@ -80,7 +80,7 @@ def nominal_fill_na(data:DataFrame, dict_values_to_prob:Dict, dict_atribute_rows
             for value in dict_values_to_prob[feature]:
                 prob = dict_values_to_prob[feature][value]
                 column_name = feature + "_" + value
-                data[row,column_name] = prob
+                data.loc[row,column_name] = prob
     return data
 
 
@@ -112,7 +112,7 @@ def municipality_raw_parser(municipality_column):
                     "habana del este":"habana del este"}
     result = []
     for munc in municipality_column:
-        if munc.lower() not in dict_munic:
+        if  pd.isna(munc) or munc.lower() not in dict_munic:
             munc = "habana del este"
         result.append(dict_munic[munc.lower()])
     return result
@@ -162,10 +162,8 @@ def data_performing(df, interesting_atribute, relevant_weights, dict_parser_stra
     dict_values_to_prob, dict_atribute_rowsnan = precomputing_nominal_fill_na(relevant_data)
     relevant_data = pd.get_dummies(relevant_data)
     relevant_data = nominal_fill_na(relevant_data, dict_values_to_prob, dict_atribute_rowsnan)
-    header = relevant_data.columns.values
     sc = StandardScaler()
-    relevant_data = pd.DataFrame(sc.fit_transform(relevant_data))
-    relevant_data.columns = header
+    relevant_data.loc[:,:] = sc.fit_transform(relevant_data)
     for i in range(len(relevant_weights)):
         j = i
         while relevant_data.columns.values[j].startswith(interesting_atribute[j]):
