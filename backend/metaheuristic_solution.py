@@ -5,8 +5,8 @@ from math import inf
 
 
 def run(data, num_groups):
-    d = np.array(data)
-    val, opt = metaheuristic(num_groups, d.shape[0], data)
+    d = data.to_numpy()
+    val, opt = metaheuristic(num_groups, d.shape[0], d)
     d = {i: [] for i in range(num_groups)}
     for i, item in enumerate(opt.st):
         d[item].append(i)
@@ -14,7 +14,7 @@ def run(data, num_groups):
 
 
 def metaheuristic(
-    num_groups, num_students, data, iter=100, num_init_states=200, num_neighbors=40
+    num_groups, num_students, data, iter=100, num_init_states=10, num_neighbors=10
 ):
     func_val_opt = inf
     opt_st = None
