@@ -5,10 +5,26 @@ from sklearn.preprocessing import StandardScaler
 import numpy as np
 from random import random
 
-
-def fill_na(data):
+def to_dataFrame(file_path:str) -> DataFrame:
     """
-    Asigna a los valores nan de un feature determinado un valor de los que este feature puede tomar utilizando
+    Dada la direccion del archivo retorna un data frame con los datos.
+    Extensiones soportadas: csv,xls,xlsx,xlsm,xlsb,odf,json
+    Excepción en caso de extensión inválida
+    """
+    df = None
+    if file_path.endswith(".csv"):
+        df = pd.read_csv(file_path)
+    elif file_path.endswith((".xls", ".xlsx", ".xlsm", ".xlsb", ".odf")):
+        df = pd.read_excel(file_path)
+    elif file_path.endswith(".json"):
+        df = pd.read_json(file_path, typ="frame")
+    else:
+        raise Exception("The extension is not allowed.")
+    return df
+
+def fill_na(data:DataFrame)->DataFrame:
+    """
+    Asigna a los valores nan de un feature determinado un valor de los que este feature puede tomar utilizando 
     la probabilidad de ocurrencia de cada uno de esos valores a partir de una función de probabilidad
     """
     dict_values_to_freq = {}
@@ -36,11 +52,10 @@ def fill_na(data):
                         break
     return data
 
-
-def values_fill_na(data: DataFrame):
+def values_fill_na(data:DataFrame)-> DataFrame:
     """
     Rellena los valores nan de los atributos numericos en el data frame original
-    data-> data frama de pandas(data de entrada completa antes de dummy)
+    data-> data frame(data de entrada completa antes de dummy)
     """
     types = data.dtypes
     for i in range(len(types)):
@@ -51,9 +66,9 @@ def values_fill_na(data: DataFrame):
     return data
 
 
-def precomputing_nominal_fill_na(data: DataFrame):
+def __precomputing_nominal_fill_na__(data:DataFrame):
     """
-    Precomputan los diccionarios para la sustitucion de los valores nan nominales
+    Precomputa los diccionarios para la sustitución de los valores nan nominales
     """
     dict_values_to_prob = {}
     dict_atribute_rowsnan = {}
@@ -70,19 +85,18 @@ def precomputing_nominal_fill_na(data: DataFrame):
                 dict_values_to_prob[feature][row[feature]] += 1
         for value in dict_values_to_prob[feature]:
             dict_values_to_prob[feature][value] = dict_values_to_prob[feature][
-                value
-            ] / (len(data) - data[feature].isna().sum())
+                value] / (len(data) - data[feature].isna().sum())
     return dict_values_to_prob, dict_atribute_rowsnan
 
 
 def nominal_fill_na(
     data: DataFrame, dict_values_to_prob: Dict, dict_atribute_rowsnan: Dict
-):
+)->DataFrame:
     """
     Rellena los valores nan de los atributos nominales en el data frame original
-    data-> data frama de pandas(data de entrada completa luego de dummy)
+    data-> data frame (data de entrada completa luego de dummy)
     dict_values_to_prob -> diccionario atributo : (dict valor: probabilidad)
-    dict_atribute_rowsnan -> diccionario atributo : lista de filas que tenian nan
+    dict_atribute_rowsnan -> diccionario atributo : lista de filas que tenían nan
     """
     for feature in dict_atribute_rowsnan:
         rows = dict_atribute_rowsnan[feature]
@@ -96,10 +110,10 @@ def nominal_fill_na(
     return data
 
 
-def municipality_raw_parser(municipality_column):
+def municipality_raw_parser(municipality_column) -> list:
     """
     Otorga un nombre standard a los municipios
-    a los municipios fuera de la habana les otorgo el valor: habana del este
+    A los municipios fuera de La Habana les otorga el valor: habana del este
     """
     dict_munic = {
         "plaza de la revolucion": "plaza de la revoución",
@@ -131,10 +145,10 @@ def municipality_raw_parser(municipality_column):
     return result
 
 
-def municipality_parser_universityDistance(municipality_column):
+def municipality_parser_universityDistance(municipality_column)-> list:
     """
     Realiza un primer municipality_parser_raw, y luego
-    Otorga un valor standard a los municipios segun su cercania con la universidad
+    Otorga un valor standard a los municipios segun su cercanía con la universidad
     """
     dict_munic = {
         "plaza de la revoución": 0,
@@ -166,12 +180,14 @@ dict_parsers_global = {
 }
 
 
-def data_performing(df, interesting_atribute, relevant_weights, dict_parser_strategy):
+def data_performing(
+    df:DataFrame, interesting_atribute:list, relevant_weights:list, dict_parser_strategy:Dict
+)->DataFrame:
     """
-    df-> data frama de pandas(data de entrada completa)
+    df-> data frame(data de entrada completa)
     interesting_atribute-> lista con el nombre de los atributos relevantes
-    relevant_weights -> relevancia de los atributos de interes
-    dict_parser_strategy -> donde se indica el tipo de parser a ejcutar sobre un atributo
+    relevant_weights -> relevancia de los atributos de interés
+    dict_parser_strategy -> indica el tipo de parser a ejcutar sobre un atributo
     """
     relevant_data = df.loc[:, interesting_atribute]
     for atribute_name in dict_parser_strategy:
@@ -180,7 +196,7 @@ def data_performing(df, interesting_atribute, relevant_weights, dict_parser_stra
         ](relevant_data[atribute_name])
     relevant_data = values_fill_na(relevant_data)
     # relevant_data = fill_na(relevant_data)
-    dict_values_to_prob, dict_atribute_rowsnan = precomputing_nominal_fill_na(
+    dict_values_to_prob, dict_atribute_rowsnan = __precomputing_nominal_fill_na__(
         relevant_data
     )
     relevant_data = pd.get_dummies(relevant_data)
