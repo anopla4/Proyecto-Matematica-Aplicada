@@ -6,6 +6,7 @@ import Home from "./components/Home/Home";
 import Settings from "./components/Settings/Settings";
 import Layout from "./components/Layout/Layout";
 import Data from "./components/Data/Data";
+import Groups from "./components/Groups/Groups";
 
 class App extends Component {
   render() {
@@ -16,6 +17,7 @@ class App extends Component {
             <Route path="/" element={<Home />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/data" element={<Data />} />
+            <Route path="/groups" element={<Groups />} />
           </Routes>
         </Layout>
       </BrowserRouter>
