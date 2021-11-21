@@ -7,6 +7,7 @@ import Settings from "./components/Settings/Settings";
 import Layout from "./components/Layout/Layout";
 import Data from "./components/Data/Data";
 import Groups from "./components/Groups/Groups";
+import Statistics from "./components/Statistics/Statistics";
 
 class App extends Component {
   render() {
@@ -18,6 +19,7 @@ class App extends Component {
             <Route path="/settings" element={<Settings />} />
             <Route path="/data" element={<Data />} />
             <Route path="/groups" element={<Groups />} />
+            <Route path="/statistics" element={<Statistics />} />
           </Routes>
         </Layout>
       </BrowserRouter>
