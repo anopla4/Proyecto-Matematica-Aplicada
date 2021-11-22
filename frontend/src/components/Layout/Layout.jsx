@@ -1,13 +1,9 @@
 import React from "react";
-import { Container, Row } from "react-bootstrap";
-import Navigation from "../NavBar/NavBar";
+import { Container } from "react-bootstrap";
 
 const layout = props => {
   return (
-    <Container>
-      <Row>
-        <Navigation />
-      </Row>
+    <Container className="mt-5">
       <main>{props.children}</main>
     </Container>
   );

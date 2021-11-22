@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Tab, Col, Row, Nav, Table, Button } from "react-bootstrap";
+import Navigation from "../NavBar/NavBar";
 
 class Groups extends Component {
   state = {
@@ -92,9 +93,17 @@ class Groups extends Component {
       "light",
     ],
   };
+
+  handleAccept = () => {
+    this.props.history.push({ pathname: "/" });
+  };
+
   render() {
     return (
       <Tab.Container id="list-group-tabs-example" defaultActiveKey={1}>
+        <Row>
+          <Navigation />
+        </Row>
         <Row>
           <Col md={3}>
             <Nav className="flex-column">
@@ -140,6 +149,11 @@ class Groups extends Component {
                 ))
               )}
             </Tab.Content>
+          </Col>
+        </Row>
+        <Row>
+          <Col className="d-flex align-items-end justify-content-end">
+            <Button onClick={this.handleAccept}>Aceptar</Button>
           </Col>
         </Row>
       </Tab.Container>

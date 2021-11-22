@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Table, Row, Col, Form, Toast } from "react-bootstrap";
+import { Table, Row, Col, Form, Toast, Button } from "react-bootstrap";
 import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
 class Data extends Component {
   state = {
@@ -49,6 +49,10 @@ class Data extends Component {
       numberOfAttributesToBig: false,
     });
   }.bind(this);
+
+  handleClickContinue = () => {
+    this.props.history.push({ pathname: "/subset" });
+  };
 
   render() {
     return (
@@ -102,6 +106,11 @@ class Data extends Component {
               options={Object.keys(this.state.data)}
               name="attributes"
             />
+          </Col>
+        </Row>
+        <Row>
+          <Col className="d-flex align-items-end justify-content-end">
+            <Button onClick={this.handleClickContinue}>Continuar</Button>
           </Col>
         </Row>
       </Row>
