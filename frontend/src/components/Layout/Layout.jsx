@@ -3,7 +3,13 @@ import { Container } from "react-bootstrap";
 
 const layout = props => {
   return (
-    <Container className="mt-5">
+    <Container
+      style={{
+        padding: "0px",
+        margin: "0px",
+        maxWidth: "inherit",
+      }}
+    >
       <main>{props.children}</main>
     </Container>
   );
