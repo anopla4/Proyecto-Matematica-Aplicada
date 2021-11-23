@@ -1,14 +1,5 @@
 import React, { Component } from "react";
-import {
-  Col,
-  Row,
-  Button,
-  Form,
-  ListGroup,
-  Badge,
-  Tabs,
-  Tab,
-} from "react-bootstrap";
+import { Col, Row, Button, Form, ListGroup, Tabs, Tab } from "react-bootstrap";
 import BootstrapTable from "react-bootstrap-table-next";
 import filterFactory, {
   numberFilter,
@@ -30,6 +21,7 @@ class Subset extends Component {
     subsetAttributes: [],
     studentsSubset: [],
     subsets: {},
+    subsetOnScreen: 0,
     subsetToBeAdded: 0,
   };
 
@@ -163,7 +155,7 @@ class Subset extends Component {
     this.setState({ subsetToBeAdded: e.target.value });
   };
 
-  handleAssignStudentsToSubset = e => {
+  handleAssignStudentsToSubset = () => {
     if (this.state.subsetToBeAdded === 0) {
       return;
     } else {
@@ -180,7 +172,30 @@ class Subset extends Component {
     }
   };
 
-  handleChangeSubset = () => {};
+  handleChangeSubsetOnScreen = e => {
+    let n = parseInt(e);
+    // let newSelected = this.state.selected;
+    // newSelected = newSelected.filter(x => {
+    //   if (this.state.subsetOnScreen === 0) {
+    //     return !this.state.subsets[this.state.subsetOnScreen].includes(x);
+    //   }
+    //   return !this.state.subsets[this.state.subsetOnScreen][
+    //     "students"
+    //   ].includes(x);
+    // });
+    this.setState({ subsetOnScreen: n, selected: [] });
+  };
+
+  handleUnassignStudents = () => {
+    let newSubsets = this.state.subsets;
+    this.state.selected.map(x => newSubsets[0].push(x));
+    if (this.state.subsetOnScreen !== 0) {
+      newSubsets[this.state.subsetOnScreen]["students"] = newSubsets[
+        this.state.subsetOnScreen
+      ]["students"].filter(x => !this.state.selected.includes(x));
+      this.setState({ selected: [], subsets: newSubsets });
+    }
+  };
 
   render() {
     return (
@@ -204,7 +219,12 @@ class Subset extends Component {
             </Form>
           </Col>
         </Row>
-        <Tabs id="subsets-tabs" defaultActiveKey={"0"} className="mb-3 mt-5">
+        <Tabs
+          onSelect={this.handleChangeSubsetOnScreen}
+          id="subsets-tabs"
+          defaultActiveKey={"0"}
+          className="mb-3 mt-5"
+        >
           {Object.keys(this.state.subsets).map(x => (
             <Tab
               eventKey={x}
@@ -235,27 +255,37 @@ class Subset extends Component {
                   </Row>
                   {x === "0" && (
                     <Row>
-                      <Col md={8}>
-                        <Badge bg="light">
-                          <Row>
-                            <Col md={9}>
-                              <Button
-                                onClick={this.handleAssignStudentsToSubset}
-                                variant="secondary"
-                              >
-                                Asignar estudiantes al subconjunto{" "}
-                              </Button>
-                            </Col>
-                            <Col md={3}>
-                              <Form.Control
-                                onChange={this.handleOnChangeSubsetToBeAdded}
-                                min={0}
-                                max={this.state.subsets.length}
-                                type="number"
-                              />
-                            </Col>
-                          </Row>
-                        </Badge>
+                      <Col md={7}>
+                        <Row>
+                          <Col md={6}>
+                            <Button
+                              onClick={this.handleAssignStudentsToSubset}
+                              variant="secondary"
+                            >
+                              Asignar estudiantes al subconjunto{" "}
+                            </Button>
+                          </Col>
+                          <Col md={2}>
+                            <Form.Control
+                              onChange={this.handleOnChangeSubsetToBeAdded}
+                              min={0}
+                              max={Object.keys(this.state.subsets).length - 1}
+                              type="number"
+                            />
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Row>
+                  )}
+                  {x !== "0" && (
+                    <Row>
+                      <Col md={7}>
+                        <Button
+                          variant="danger"
+                          onClick={this.handleUnassignStudents}
+                        >
+                          Eliminar estudiantes seleccionados
+                        </Button>
                       </Col>
                     </Row>
                   )}
