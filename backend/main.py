@@ -21,8 +21,6 @@ def main_action(
     """
     data = to_dataFrame(file_path)
 
-    # function sub grups here
-
     names = np.array(data["Nombre"] + " " + data["Apellidos"])
     data_transf = data_performing(
         data,

@@ -4,6 +4,8 @@ from pandas.core.frame import DataFrame
 from sklearn.preprocessing import StandardScaler
 import numpy as np
 from random import random
+from re import search
+
 
 def to_dataFrame(file_path:str) -> DataFrame:
     """
@@ -21,6 +23,31 @@ def to_dataFrame(file_path:str) -> DataFrame:
     else:
         raise Exception("The extension is not allowed.")
     return df
+
+def replace_bad_character(data:DataFrame)-> DataFrame:
+    """
+    data -> DataFrame completo incial
+    Devuelve un dataframe donde se sustituyen por NaN todas las expresiones que indiquen
+        ausencia de datos
+        Ej: ---- se remplaza por NaN para ser procesado
+    """
+    pattern="[A-Za-z0-9]+" #patrón con el que se van a comparar todas las cadenas
+    new_data_set={}  #diccionario -> par {etiqueta:[valores]} del dataframe
+    for col in data[:]:
+        new_list_col=[]
+        for row in data[col]:
+                if isinstance(row, str):
+                    x= search(pattern,row)
+                    if not x:
+                        new_list_col.append(None)
+                    else:
+                        new_list_col.append(row)
+                        
+                else:
+                    new_list_col.append(row)
+        new_data_set[col]=new_list_col
+
+    return DataFrame(new_data_set)
 
 def fill_na(data:DataFrame)->DataFrame:
     """
@@ -194,6 +221,7 @@ def data_performing(
         relevant_data[atribute_name] = dict_parsers_global[
             dict_parser_strategy[atribute_name]
         ](relevant_data[atribute_name])
+    relevant_data = replace_bad_character(relevant_data)
     relevant_data = values_fill_na(relevant_data)
     # relevant_data = fill_na(relevant_data)
     dict_values_to_prob, dict_atribute_rowsnan = __precomputing_nominal_fill_na__(
