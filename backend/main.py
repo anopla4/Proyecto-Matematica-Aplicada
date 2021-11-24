@@ -5,17 +5,23 @@ import numpy as np
 from data_processing import data_performing, to_dataFrame
 from kmean import get_groups_with_kmean
 from metaheuristic_solution import run, func
+from typing import List
 
 
-def main_action(file_path:str,  sub_groups_specifications:dict, relevants_feature:list, 
-    weights:list[float], dict_parser_strategy:dict = {}):
+def main_action(
+    file_path: str,
+    sub_groups_specifications: dict,
+    relevants_feature: list,
+    weights: List[float],
+    dict_parser_strategy: dict = {},
+):
     """
     Ejecuta la distribución de los grupos según los parámetros especificados
     Retorna una lista de listas con los grupos
     """
     data = to_dataFrame(file_path)
-    
-    #function sub grups here
+
+    # function sub grups here
 
     names = np.array(data["Nombre"] + " " + data["Apellidos"])
     data_transf = data_performing(
@@ -105,9 +111,8 @@ def main_action(file_path:str,  sub_groups_specifications:dict, relevants_featur
         print(f"Organización política {politics_organization_1}")
         print(f"Fuente de ingreso {access_type_1}")
         print(f"Provincia {province_1}")
-    
-    return groups_kmean
 
+    return groups_kmean
 
 
 def evaluate_kmean_solution(groups, data):
@@ -116,4 +121,3 @@ def evaluate_kmean_solution(groups, data):
         for s in item:
             sol[s] = g
     return func(sol, data.to_numpy(), len(groups))
-

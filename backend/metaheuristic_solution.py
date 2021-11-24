@@ -51,27 +51,31 @@ def func(x, data, num_groups):
         dist_attr_vect = []
         for i in range(num_groups):
             for j in range(i + 1, num_groups):
-                dist_attr_vect.append(
-                    euler_distance(attr_val_per_group[a][i], attr_val_per_group[a][j])
-                )
+                x = attr_val_per_group[a][i]
+                y = attr_val_per_group[a][j]
+                if len(x) > len(y):
+                    m = statistics.mean(y)
+                    y = y + [m]
+                if len(x) < len(y):
+                    m = statistics.mean(x)
+                    x = x + [m]
+                dist_attr_vect.append(euler_distance(x, y))
         ecm_per_attr.append(get_ecm(dist_attr_vect))
     return euler_distance(ecm_per_attr, [0 for _ in range(num_attr)])
 
 
 def build_attr_per_group(x, data, num_groups):
     attr_val_per_group = {
-        i: {j: [] for j in range(num_groups)} for i in range(data.shape[0])
+        i: {j: [] for j in range(num_groups)} for i in range(data.shape[1])
     }
     for std in range(data.shape[0]):
         for attr in range(data.shape[1]):
             attr_val_per_group[attr][x[std]].append(data[std][attr])
-
     return attr_val_per_group
 
 
 def euler_distance(x, y):
     acc = 0
-
     for i in range(len(x)):
         acc = acc + (x[i] - y[i]) ** 2
     return np.sqrt(acc)
