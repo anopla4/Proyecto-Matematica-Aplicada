@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 from main import main_action
 from data_processing import to_dataFrame
 from typing import List
@@ -6,6 +7,15 @@ from typing import List
 app = FastAPI()
 
 file_location = "files/"
+
+origins = ["http://localhost:3000"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/file")
