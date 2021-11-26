@@ -67,4 +67,28 @@ function create_partition(dataset, constrains, subset_size) {
   return subset;
 }
 
-export { create_partition };
+function transformData(data, showedAttributes) {
+  let m = [];
+  let showedAttr = Object.entries(data).filter(x =>
+    showedAttributes.includes(x[0])
+  );
+  showedAttr.map(x => m.push(x[1]));
+  return m[0].map((_, colIndex) => m.map(row => row[colIndex]));
+}
+
+function transformDataBootstrapTable(data, attributesType) {
+  let m = [];
+  let showedAttr = Object.entries(data);
+  showedAttr.map(x => m.push(x[1]));
+  let rows = m[0].map((_, colIndex) => m.map(row => row[colIndex]));
+  let sol = [];
+  rows.forEach((row, j) => {
+    let obj = { id: j };
+    let attr = Object.keys(attributesType);
+    row.map((item, index) => (obj[attr[index]] = item));
+    sol.push(obj);
+  });
+  return sol;
+}
+
+export { create_partition, transformDataBootstrapTable, transformData };

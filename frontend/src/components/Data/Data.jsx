@@ -10,39 +10,15 @@ import {
 } from "react-bootstrap";
 import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
 import { withRouter } from "react-router-dom";
+import { transformData } from "../../utils";
 
 class Data extends Component {
   state = {
-    data: {
-      Nombre: ["Alejandro", "Ana Paula"],
-      Sexo: ["Masculino", "Femenino"],
-      Fuente: ["Pre-universitario", "Pre-universitario"],
-      Índice: [89, 99.81],
-      Organización: ["Ninguna", "Ninguna"],
-      Provincia: ["La Habana", "La Habana"],
-    },
+    data: undefined,
     showedAttributes: [],
     attributesType: {},
     attrTypeIncomplete: false,
     numberOfAttributesToBig: false,
-  };
-
-  componentWillMount() {
-    let attr = Object.keys(this.state.data);
-    let attrType = {};
-    attr.map(x => (attrType[x] = ""));
-    let showedAttr =
-      attr.length < 5 ? attr.splice(0, attr.length - 1) : attr.splice(0, 5);
-    this.setState({ showedAttributes: showedAttr, attributesType: attrType });
-  }
-
-  transformData = function (data) {
-    let m = [];
-    let showedAttr = Object.entries(data).filter(x =>
-      this.state.showedAttributes.includes(x[0])
-    );
-    showedAttr.map(x => m.push(x[1]));
-    return m[0].map((_, colIndex) => m.map(row => row[colIndex]));
   };
 
   handleSelectAttributes = e => {
@@ -59,19 +35,50 @@ class Data extends Component {
     }
   };
 
-  handleFileUpload = function (e) {
+  handleFileUpload = e => {
     e.preventDefault();
-    console.log(e.target.files);
+    var formdata = new FormData();
+    formdata.append("file", e.target.files[0], e.target.files[0].name);
+    fetch("http://127.0.0.1:8000/file", {
+      method: "POST",
+      body: formdata,
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw Error(response.statusText);
+        }
+        return response.json();
+      })
+      .then(response => {
+        response = JSON.parse(response);
+        let attr = Object.keys(response);
+        let attrType = {};
+        attr.map(x => (attrType[x] = "Nominal"));
+        let showedAttr =
+          attr.length < 5 ? attr.splice(0, attr.length - 1) : attr.splice(0, 5);
+        let d = {};
+        Object.keys(response).map(x => (d[x] = Object.values(response[x])));
+        this.setState({
+          data: d,
+          showedAttributes: showedAttr,
+          attributesType: attrType,
+        });
+      })
+      .catch(function (error) {
+        console.log("Hubo un problema con la petición Fetch:" + error.message);
+      });
   };
 
-  closeToast = function (e) {
+  closeToast = e => {
     this.setState({
       numberOfAttributesToBig: false,
     });
-  }.bind(this);
+  };
 
   handleClickContinue = () => {
-    if (Object.values(this.state.attributesType).includes("")) {
+    if (this.state.data === undefined) {
+      return;
+    } else if (Object.values(this.state.attributesType).includes("")) {
       this.setState({ attrTypeIncomplete: true });
     } else {
       this.props.history.push({
@@ -117,63 +124,70 @@ class Data extends Component {
 
         <Row>
           <Col>
-            <Table bordered striped hover className="mt-5">
-              <thead>
-                {Object.keys(this.state.data)
-                  .filter(x => this.state.showedAttributes.includes(x))
-                  .map(x => (
-                    <th>{x}</th>
-                  ))}
-              </thead>
-              <tbody>
-                {this.transformData(this.state.data).map(x => (
-                  <tr>
-                    {x.map(y => (
-                      <td>{y}</td>
+            {this.state.data !== undefined && (
+              <Table bordered striped hover className="mt-5">
+                <thead>
+                  {Object.keys(this.state.data)
+                    .filter(x => this.state.showedAttributes.includes(x))
+                    .map(x => (
+                      <th>{x}</th>
                     ))}
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </Col>
-          <Col md={3}>
-            {this.state.numberOfAttributesToBig && (
-              <Toast onClose={this.closeToast}>
-                <Toast.Header>
-                  <strong className="me-auto">¡Atención!</strong>
-                </Toast.Header>
-                <Toast.Body>
-                  Para visibilizar bien la información solo se mostrarán cinco
-                  propiedades como máximo.
-                </Toast.Body>
-              </Toast>
+                </thead>
+                <tbody>
+                  {transformData(
+                    this.state.data,
+                    this.state.showedAttributes
+                  ).map(x => (
+                    <tr>
+                      {x.map(y => (
+                        <td>{y}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
             )}
-            <DropdownMultiselect
-              handleOnChange={this.handleSelectAttributes}
-              selected={this.state.showedAttributes}
-              options={Object.keys(this.state.data)}
-              name="attributes"
-            />
-            <Container className="mt-5">
-              <h6>Seleccione el tipo de atributo en cada caso</h6>
-              {Object.keys(this.state.data).map(x => (
-                <Row className="mt-2">
-                  <p>{x}: </p>
-                  <Form>
-                    <Form.Select
-                      onChange={this.handleTypeAttributes}
-                      id={x}
-                      aria-label="attribute type"
-                    >
-                      <option></option>
-                      <option value="1">Nominal</option>
-                      <option value="2">Numérico</option>
-                    </Form.Select>
-                  </Form>
-                </Row>
-              ))}
-            </Container>
           </Col>
+          {this.state.data !== undefined && (
+            <Col md={3}>
+              {this.state.numberOfAttributesToBig && (
+                <Toast onClose={this.closeToast}>
+                  <Toast.Header>
+                    <strong className="me-auto">¡Atención!</strong>
+                  </Toast.Header>
+                  <Toast.Body>
+                    Para visibilizar bien la información solo se mostrarán cinco
+                    propiedades como máximo.
+                  </Toast.Body>
+                </Toast>
+              )}
+              <DropdownMultiselect
+                handleOnChange={this.handleSelectAttributes}
+                selected={this.state.showedAttributes}
+                options={Object.keys(this.state.data)}
+                name="attributes"
+              />
+              <Container className="mt-5">
+                <h6>Seleccione el tipo de atributo en cada caso</h6>
+                {Object.keys(this.state.data).map(x => (
+                  <Row className="mt-2">
+                    <p>{x}: </p>
+                    <Form>
+                      <Form.Select
+                        onChange={this.handleTypeAttributes}
+                        id={x}
+                        aria-label="attribute type"
+                      >
+                        <option></option>
+                        <option value="1">Nominal</option>
+                        <option value="2">Numérico</option>
+                      </Form.Select>
+                    </Form>
+                  </Row>
+                ))}
+              </Container>
+            </Col>
+          )}
         </Row>
         <Row>
           <Col className="d-flex align-items-end justify-content-end">

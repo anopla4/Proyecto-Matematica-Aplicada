@@ -1,113 +1,82 @@
 import React, { Component } from "react";
-import { Bar, Pie, Scatter } from "react-chartjs-2";
-import { Row, Col, Container } from "react-bootstrap";
+import { Bar, Scatter } from "react-chartjs-2";
+import { Row, Col, Container, Form } from "react-bootstrap";
 
 class Statistics extends Component {
   state = {
-    type: "continue",
-    attribute: "Provincia",
-    data: {
-      labels: ["La Habana", "Matanzas", "Pinar del Río"],
-      datasets: [
-        {
-          label: "Grupo 1",
-          data: [1, 3, 1],
-          backgroundColor: ["rgba(255, 99, 132, 0.2)"],
-          borderColor: ["rgba(255, 99, 132, 1)"],
-          borderWidth: 1,
-        },
-        {
-          label: "Grupo 2",
-          data: [1, 1, 1],
-          backgroundColor: ["rgba(120, 159, 64, 0.2)"],
-          borderColor: ["rgba(54, 162, 235, 1)"],
-          borderWidth: 1,
-        },
-      ],
-    },
-    options: {
+    type: "",
+    attribute: "",
+  };
+
+  handleChangeAttribute = e => {
+    let attr = e.target.value;
+    let type = attr === "" ? "" : this.props.attributesType[attr];
+    this.setState({ attribute: attr, type: type });
+  };
+
+  generateColor = () => {
+    let r = Math.random() * 255;
+    let g = Math.random() * 255;
+    let b = Math.random() * 255;
+    let a = Math.random();
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  };
+
+  transformDataBar = () => {
+    let data = {
+      labels: this.props.data[this.state.attribute].filter(function (
+        elem,
+        index,
+        self
+      ) {
+        return index === self.indexOf(elem);
+      }),
+      datasets: [],
+    };
+    let options = {
       scales: {
         y: {
           beginAtZero: true,
         },
       },
-    },
-    dataPie: {
-      labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-      datasets: [
-        {
-          label: "# of Votes",
-          data: [3, 5, 3, 5, 2, 3],
-          backgroundColor: [
-            "rgba(255, 99, 132, 0.2)",
-            "rgba(54, 162, 235, 0.2)",
-            "rgba(255, 206, 86, 0.2)",
-            "rgba(75, 192, 192, 0.2)",
-            "rgba(153, 102, 255, 0.2)",
-            "rgba(255, 159, 64, 0.2)",
-          ],
-          borderColor: [
-            "rgba(255, 99, 132, 1)",
-            "rgba(54, 162, 235, 1)",
-            "rgba(255, 206, 86, 1)",
-            "rgba(75, 192, 192, 1)",
-            "rgba(153, 102, 255, 1)",
-            "rgba(255, 159, 64, 1)",
-          ],
-          borderWidth: 1,
-        },
-        {
-          label: "# of Votes",
-          data: [12, 19, 3, 5, 2, 3],
-          backgroundColor: [
-            "rgba(255, 99, 132, 0.2)",
-            "rgba(54, 162, 235, 0.2)",
-            "rgba(255, 206, 86, 0.2)",
-            "rgba(75, 192, 192, 0.2)",
-            "rgba(153, 102, 255, 0.2)",
-            "rgba(255, 159, 64, 0.2)",
-          ],
-          borderColor: [
-            "rgba(255, 99, 132, 1)",
-            "rgba(54, 162, 235, 1)",
-            "rgba(255, 206, 86, 1)",
-            "rgba(75, 192, 192, 1)",
-            "rgba(153, 102, 255, 1)",
-            "rgba(255, 159, 64, 1)",
-          ],
-          borderWidth: 1,
-        },
-      ],
-    },
-    dataScatter: {
-      datasets: [
-        {
-          label: "Grupo 1",
-          data: [
-            { x: 89, y: 1 },
-            { x: 99.81, y: 1 },
-          ],
-          backgroundColor: "rgba(255, 99, 132, 1)",
-        },
-        {
-          label: "Grupo 2",
-          data: [
-            { x: 89, y: 2 },
-            { x: 99.81, y: 2 },
-          ],
-          backgroundColor: "rgba(120, 99, 132, 1)",
-        },
-        {
-          label: "Grupo 3",
-          data: [
-            { x: 89, y: 3 },
-            { x: 99.81, y: 3 },
-          ],
-          backgroundColor: "rgba(255, 234, 132, 1)",
-        },
-      ],
-    },
-    optionsScatter: {
+    };
+    Object.keys(this.props.groups).map(x => {
+      let attrCounts = {};
+      data.labels.map(y => (attrCounts[y] = 0));
+      this.props.data[this.state.attribute].map(z => attrCounts[z]++);
+      data.datasets.push({
+        label: `Grupo ${x}`,
+        data: Object.values(attrCounts),
+        backgroundColor: [this.generateColor()],
+        borderColor: [this.generateColor],
+        borderWidth: 1,
+      });
+      return 0;
+    });
+
+    return [data, options];
+  };
+
+  transformDataScatter = () => {
+    let data = {
+      datasets: [],
+    };
+    Object.keys(this.props.groups).map(g => {
+      let students = this.props.groups[g];
+      let d = [];
+      students.map(s =>
+        d.push({ x: this.props.data[this.state.attribute][s], y: g })
+      );
+
+      data.datasets.push({
+        label: `Grupo ${g}`,
+        data: d,
+        backgroundColor: [this.generateColor()],
+      });
+
+      return 0;
+    });
+    let options = {
       scales: {
         yAxes: [
           {
@@ -117,28 +86,55 @@ class Statistics extends Component {
           },
         ],
       },
-    },
+    };
+    return [data, options];
   };
+
   render() {
     return (
-      <Row>
-        <Col>
-          <Container style={{ width: "60%" }}>
-            {this.state.type === "nominal" && <Bar data={this.state.data} />}
-          </Container>
-          <Container className="mt-5" style={{ width: "60%" }}>
-            {this.state.type === "nominal" && <Pie data={this.state.dataPie} />}
-          </Container>
+      <Row style={{ margin: "3%" }}>
+        <Row>
+          <Col className="d-flex align-items-center justify-content-center">
+            <h3>Estadísticas</h3>
+          </Col>
+        </Row>
+        <Row className="mt-5">
+          <Col>
+            <Container style={{ width: "100%" }}>
+              {this.state.type === "Nominal" && (
+                <Bar
+                  data={this.transformDataBar()[0]}
+                  options={this.transformDataBar()[1]}
+                />
+              )}
+            </Container>
 
-          <Container style={{ width: "60%" }}>
-            {this.state.type === "continue" && (
-              <Scatter
-                data={this.state.dataScatter}
-                options={this.state.optionsScatter}
-              />
-            )}
-          </Container>
-        </Col>
+            <Container style={{ width: "100%" }}>
+              {this.state.type === "Numérico" && (
+                <Scatter
+                  data={this.transformDataScatter()[0]}
+                  options={this.transformDataScatter()[1]}
+                />
+              )}
+            </Container>
+          </Col>
+          <Col md={3}>
+            <Form>
+              <Form.Label>
+                Seleccione el atributo del que quiere ver las estadísticas
+              </Form.Label>
+              <Form.Select
+                onChange={this.handleChangeAttribute}
+                aria-label="Default select example"
+              >
+                <option></option>
+                {Object.keys(this.props.data).map(x => (
+                  <option value={x}>{x}</option>
+                ))}
+              </Form.Select>
+            </Form>
+          </Col>
+        </Row>
       </Row>
     );
   }

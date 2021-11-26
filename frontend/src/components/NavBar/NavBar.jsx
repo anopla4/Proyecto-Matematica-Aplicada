@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import "./NavBar.css";
-import { Navbar, Nav, Offcanvas, Container } from "react-bootstrap";
+import { withRouter } from "react-router-dom";
+import { Navbar, Nav, Offcanvas, Container, Button } from "react-bootstrap";
 
 class Navigation extends Component {
-  state = { numSubset: [1, 2, 3] };
-
   render() {
     return (
       <Navbar expand={false}>
@@ -24,8 +23,14 @@ class Navigation extends Component {
             </Offcanvas.Header>
             <Offcanvas.Body>
               <Nav className="justify-content-end flex-grow-1 pe-3">
-                {this.state.numSubset.map(x => (
-                  <Nav.Link href="/statistics">Subconjunto {x}</Nav.Link>
+                {Object.keys(this.props.items).map(x => (
+                  <Button
+                    variant="light"
+                    id={x}
+                    onClick={() => this.props.onClick(x)}
+                  >
+                    Subconjunto {x}
+                  </Button>
                 ))}
               </Nav>
             </Offcanvas.Body>
@@ -36,4 +41,4 @@ class Navigation extends Component {
   }
 }
 
-export default Navigation;
+export default withRouter(Navigation);

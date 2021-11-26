@@ -7,6 +7,7 @@ import filterFactory, {
 } from "react-bootstrap-table2-filter";
 import { withRouter } from "react-router-dom";
 import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
+import { transformDataBootstrapTable } from "../../utils";
 
 class Subset extends Component {
   state = {
@@ -23,6 +24,7 @@ class Subset extends Component {
     subsets: {},
     subsetOnScreen: 0,
     subsetToBeAdded: 0,
+    groupsAssigned: 0,
   };
 
   componentWillMount() {
@@ -69,22 +71,14 @@ class Subset extends Component {
   }
 
   handleGenerateGroups = () => {
-    this.props.history.push({ pathname: "/groups" });
-  };
-
-  transformData = function (data) {
-    let m = [];
-    let showedAttr = Object.entries(data);
-    showedAttr.map(x => m.push(x[1]));
-    let rows = m[0].map((_, colIndex) => m.map(row => row[colIndex]));
-    let sol = [];
-    rows.forEach((row, j) => {
-      let obj = { id: j };
-      let attr = Object.keys(this.state.attributesType);
-      row.map((item, index) => (obj[attr[index]] = item));
-      sol.push(obj);
+    this.props.history.push({
+      pathname: "/groups",
+      state: {
+        data: this.state.data,
+        attributesType: this.state.attributesType,
+        subsets: this.state.subsets,
+      },
     });
-    return sol;
   };
 
   handleOnSelect = (row, isSelect) => {
@@ -117,7 +111,9 @@ class Subset extends Component {
   };
 
   handleChangeNumberGroupsSubset = e => {
-    this.setState({ numberOfGroupsSubset: e.target.value });
+    this.setState({
+      numberOfGroupsSubset: e.target.value,
+    });
   };
 
   handleCreateSubset = () => {
@@ -127,15 +123,18 @@ class Subset extends Component {
   handleAcceptSubset = () => {
     let newSubset = {};
     newSubset["attributes"] = [...this.state.subsetAttributes];
-    newSubset["numberOfGroups"] = [...this.state.numberOfGroupsSubset];
+    newSubset["numberOfGroups"] = this.state.numberOfGroupsSubset;
     newSubset["students"] = [];
     let newSubsets = this.state.subsets;
     newSubsets[Object.keys(this.state.subsets).length] = newSubset;
+    let groupsAssigned =
+      this.state.groupsAssigned + this.state.numberOfGroupsSubset;
     this.setState({
       createSubset: false,
       subsetAttributes: [],
       numberOfGroupsSubset: 1,
       subsets: newSubsets,
+      groupsAssigned: groupsAssigned,
     });
   };
 
@@ -147,7 +146,7 @@ class Subset extends Component {
 
   handleImportanceAttribute = e => {
     let subsetAttr = [...this.state.subsetAttributes];
-    subsetAttr[e.target.id] = parseInt(e.target.value);
+    subsetAttr[e.target.id][1] = parseInt(e.target.value);
     this.setState({ subsetAttributes: subsetAttr });
   };
 
@@ -174,15 +173,6 @@ class Subset extends Component {
 
   handleChangeSubsetOnScreen = e => {
     let n = parseInt(e);
-    // let newSelected = this.state.selected;
-    // newSelected = newSelected.filter(x => {
-    //   if (this.state.subsetOnScreen === 0) {
-    //     return !this.state.subsets[this.state.subsetOnScreen].includes(x);
-    //   }
-    //   return !this.state.subsets[this.state.subsetOnScreen][
-    //     "students"
-    //   ].includes(x);
-    // });
     this.setState({ subsetOnScreen: n, selected: [] });
   };
 
@@ -213,7 +203,7 @@ class Subset extends Component {
             <Form>
               <Form.Control
                 onChange={this.handleChangeNumberGroups}
-                min={1}
+                min={this.state.groupsAssigned}
                 type="number"
               ></Form.Control>
             </Form>
@@ -231,30 +221,36 @@ class Subset extends Component {
               title={x === "0" ? "Sin asignar" : `Subconjunto ${x}`}
             >
               <Row>
-                <Col>
+                <Col md={9}>
                   <Row>
-                    <BootstrapTable
-                      keyField="id"
-                      data={this.transformData(this.state.data).filter(y => {
-                        if (x === "0") {
-                          return this.state.subsets[x].includes(y.id);
-                        }
-                        return this.state.subsets[x]["students"].includes(y.id);
-                      })}
-                      columns={this.state.columns}
-                      filter={filterFactory()}
-                      selectRow={{
-                        mode: "checkbox",
-                        clickToSelect: true,
-                        selected: this.state.selected,
-                        onSelect: this.handleOnSelect,
-                        onSelectAll: this.handleOnSelectAll,
-                      }}
-                      style={{ overflowX: "scroll" }}
-                    />
+                    <Col style={{ overflow: "scroll" }}>
+                      <BootstrapTable
+                        keyField="id"
+                        data={transformDataBootstrapTable(
+                          this.state.data,
+                          this.state.attributesType
+                        ).filter(y => {
+                          if (x === "0") {
+                            return this.state.subsets[x].includes(y.id);
+                          }
+                          return this.state.subsets[x]["students"].includes(
+                            y.id
+                          );
+                        })}
+                        columns={this.state.columns}
+                        filter={filterFactory()}
+                        selectRow={{
+                          mode: "checkbox",
+                          clickToSelect: true,
+                          selected: this.state.selected,
+                          onSelect: this.handleOnSelect,
+                          onSelectAll: this.handleOnSelectAll,
+                        }}
+                      />
+                    </Col>
                   </Row>
                   {x === "0" && (
-                    <Row>
+                    <Row className="mt-3">
                       <Col md={7}>
                         <Row>
                           <Col md={6}>
@@ -311,6 +307,10 @@ class Subset extends Component {
                         <Form.Control
                           onChange={this.handleChangeNumberGroupsSubset}
                           min={1}
+                          max={
+                            this.state.numberOfGroups -
+                            this.state.groupsAssigned
+                          }
                           type="number"
                           style={{ width: "20%" }}
                         />
