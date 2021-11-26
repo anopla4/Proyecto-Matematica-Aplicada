@@ -1,3 +1,4 @@
+import time
 from typing import Dict, List, Tuple
 from numpy.lib import type_check
 import pandas as pd
@@ -8,7 +9,7 @@ from random import random
 from re import search
 
 
-def to_dataFrame(file_path:str) -> DataFrame:
+def to_dataFrame(file_path: str) -> DataFrame:
     """
     Dada la direccion del archivo retorna un data frame con los datos.
     Extensiones soportadas: csv,xls,xlsx,xlsm,xlsb,odf,json
@@ -25,34 +26,36 @@ def to_dataFrame(file_path:str) -> DataFrame:
         raise Exception("The extension is not allowed.")
     return df
 
-def replace_bad_character(data:DataFrame)-> DataFrame:
+
+def replace_bad_character(data: DataFrame) -> DataFrame:
     """
     data -> DataFrame completo incial
     Devuelve un dataframe donde se sustituyen por NaN todas las expresiones que indiquen
         ausencia de datos
         Ej: ---- se remplaza por NaN para ser procesado
     """
-    pattern="[A-Za-z0-9]+" #patrón con el que se van a comparar todas las cadenas
-    new_data_set={}  #diccionario -> par {etiqueta:[valores]} del dataframe
+    pattern = "[A-Za-z0-9]+"  # patrón con el que se van a comparar todas las cadenas
+    new_data_set = {}  # diccionario -> par {etiqueta:[valores]} del dataframe
     for col in data[:]:
-        new_list_col=[]
+        new_list_col = []
         for row in data[col]:
-                if isinstance(row, str):
-                    x= search(pattern,row)
-                    if not x:
-                        new_list_col.append(None)
-                    else:
-                        new_list_col.append(row)
-                        
+            if isinstance(row, str):
+                x = search(pattern, row)
+                if not x:
+                    new_list_col.append(None)
                 else:
                     new_list_col.append(row)
-        new_data_set[col]=new_list_col
+
+            else:
+                new_list_col.append(row)
+        new_data_set[col] = new_list_col
 
     return DataFrame(new_data_set)
 
-def fill_na(data:DataFrame)->DataFrame:
+
+def fill_na(data: DataFrame) -> DataFrame:
     """
-    Asigna a los valores nan de un feature determinado un valor de los que este feature puede tomar utilizando 
+    Asigna a los valores nan de un feature determinado un valor de los que este feature puede tomar utilizando
     la probabilidad de ocurrencia de cada uno de esos valores a partir de una función de probabilidad
     """
     dict_values_to_freq = {}
@@ -80,7 +83,8 @@ def fill_na(data:DataFrame)->DataFrame:
                         break
     return data
 
-def values_fill_na(data:DataFrame)-> DataFrame:
+
+def values_fill_na(data: DataFrame) -> DataFrame:
     """
     Rellena los valores nan de los atributos numericos en el data frame original
     data-> data frame(data de entrada completa antes de dummy)
@@ -94,7 +98,7 @@ def values_fill_na(data:DataFrame)-> DataFrame:
     return data
 
 
-def __precomputing_nominal_fill_na__(data:DataFrame):
+def __precomputing_nominal_fill_na__(data: DataFrame):
     """
     Precomputa los diccionarios para la sustitución de los valores nan nominales
     """
@@ -113,13 +117,14 @@ def __precomputing_nominal_fill_na__(data:DataFrame):
                 dict_values_to_prob[feature][row[feature]] += 1
         for value in dict_values_to_prob[feature]:
             dict_values_to_prob[feature][value] = dict_values_to_prob[feature][
-                value] / (len(data) - data[feature].isna().sum())
+                value
+            ] / (len(data) - data[feature].isna().sum())
     return dict_values_to_prob, dict_atribute_rowsnan
 
 
 def nominal_fill_na(
     data: DataFrame, dict_values_to_prob: Dict, dict_atribute_rowsnan: Dict
-)->DataFrame:
+) -> DataFrame:
     """
     Rellena los valores nan de los atributos nominales en el data frame original
     data-> data frame (data de entrada completa luego de dummy)
@@ -173,7 +178,7 @@ def municipality_raw_parser(municipality_column) -> list:
     return result
 
 
-def municipality_parser_universityDistance(municipality_column)-> list:
+def municipality_parser_universityDistance(municipality_column) -> list:
     """
     Realiza un primer municipality_parser_raw, y luego
     Otorga un valor standard a los municipios segun su cercanía con la universidad
@@ -208,15 +213,15 @@ dict_parsers_global = {
 }
 
 
-def data_performing(df:DataFrame)->DataFrame:
+def data_performing(df: DataFrame) -> DataFrame:
     """
     df-> data frame(data de entrada completa)
     interesting_atribute-> lista con el nombre de los atributos relevantes
     relevant_weights -> relevancia de los atributos de interés
     dict_parser_strategy -> indica el tipo de parser a ejcutar sobre un atributo
     """
-    relevant_data = df #.loc[:, interesting_atribute]
-    #for atribute_name in dict_parser_strategy:
+    relevant_data = df  # .loc[:, interesting_atribute]
+    # for atribute_name in dict_parser_strategy:
     #    relevant_data[atribute_name] = dict_parsers_global[
     #        dict_parser_strategy[atribute_name]
     #    ](relevant_data[atribute_name])
@@ -239,17 +244,19 @@ def data_performing(df:DataFrame)->DataFrame:
     #         j += 1
     return relevant_data
 
-def data_weighted(df:DataFrame, attr:List[Tuple[str, float]])->DataFrame:
+
+def data_weighted(df: DataFrame, attr: list([str, float])) -> DataFrame:
     relevant_data = df
     for i in range(len(attr)):
-        j = i
-        while relevant_data.columns.values[j].startswith(attr[i][0]):
-            relevant_data.loc[:, j] *= attr[i][1]
-            j += 1
+        for column in relevant_data.columns.values:
+            if column.startswith(attr[i][0]):
+                relevant_data.loc[:, column] *= attr[i][1]
     return relevant_data
 
-def get_data_types(df:DataFrame)-> dict:
+
+def get_data_types(df: DataFrame) -> dict:
     return df.dtypes.to_json()
+
 
 # df = to_dataFrame("files/filetemp.xlsx")
 # print(get_data_types(df))

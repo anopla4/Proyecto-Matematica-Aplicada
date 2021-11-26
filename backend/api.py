@@ -6,7 +6,8 @@ from typing import List
 
 app = FastAPI()
 
-file_location = "files/"
+# file_location = "files/"
+file_location = "files/1RO CC 2021.xlsx"
 
 origins = ["http://localhost:3000"]
 app.add_middleware(
@@ -32,12 +33,12 @@ async def upload_file(file: UploadFile = File(...)):
 
 @app.post("/groups")
 def group_processing(
-    subset:dict,
-    types:dict
-    #sub_groups_specifications: dict = {},
-    #relevants_feature: list = [],
-    #weights: List[float] = [],
-    #dict_parser_strategy: dict = {},
+    subset: dict,
+    types: dict
+    # sub_groups_specifications: dict = {},
+    # relevants_feature: list = [],
+    # weights: List[float] = [],
+    # dict_parser_strategy: dict = {},
 ):
     """
     sub_groups_specifications-> diccionario donde se definen las condiciones de los subgrupos
@@ -49,9 +50,9 @@ def group_processing(
         file_location,
         subset,
         types
-        #sub_groups_specifications,
-        #relevants_feature,
-        #weights,
-        #dict_parser_strategy,
+        # sub_groups_specifications,
+        # relevants_feature,
+        # weights,
+        # dict_parser_strategy,
     )
     return groups

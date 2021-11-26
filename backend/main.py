@@ -11,11 +11,11 @@ from typing import List
 def main_action(
     file_path: str,
     subset: dict,
-    types:dict
-    #sub_groups_specifications: dict,
-    #relevants_feature: list,
-    #weights: List[float],
-    #dict_parser_strategy: dict = {},
+    types: dict
+    # sub_groups_specifications: dict,
+    # relevants_feature: list,
+    # weights: List[float],
+    # dict_parser_strategy: dict = {},
 ):
     """
     Ejecuta la distribución de los grupos según los parámetros especificados
@@ -24,12 +24,12 @@ def main_action(
     data = to_dataFrame(file_path)
 
     result = []
-    #data_perf = data_performing(data)
-    for sub, obj in subset:
-        num_gr = obj.groups_number
-        students = obj.students
-        attr = obj.attr
-        relevant_data = data_performing(data.loc[students, [ k for k,_ in attr]])
+    # data_perf = data_performing(data)
+    for sub, obj in subset.items():
+        num_gr = int(obj["numberOfGroups"])
+        students = obj["students"]
+        attr = obj["attributes"]
+        relevant_data = data_performing(data.loc[students, [k for k, _ in attr]])
         data_w = data_weighted(relevant_data, attr)
         groups_kmean = get_groups_with_kmean(data_w, num_gr)
         result.append(groups_kmean)
