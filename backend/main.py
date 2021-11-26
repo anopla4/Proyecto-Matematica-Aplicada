@@ -2,7 +2,7 @@ from typing import DefaultDict
 from collections import defaultdict
 import pandas as pd
 import numpy as np
-from data_processing import data_performing, to_dataFrame
+from data_processing import data_performing, data_weighted, to_dataFrame
 from kmean import get_groups_with_kmean
 from metaheuristic_solution import run, func
 from typing import List
@@ -10,16 +10,31 @@ from typing import List
 
 def main_action(
     file_path: str,
-    sub_groups_specifications: dict,
-    relevants_feature: list,
-    weights: List[float],
-    dict_parser_strategy: dict = {},
+    subset: dict,
+    types:dict
+    #sub_groups_specifications: dict,
+    #relevants_feature: list,
+    #weights: List[float],
+    #dict_parser_strategy: dict = {},
 ):
     """
     Ejecuta la distribución de los grupos según los parámetros especificados
     Retorna una lista de listas con los grupos
     """
     data = to_dataFrame(file_path)
+
+    result = []
+    #data_perf = data_performing(data)
+    for sub, obj in subset:
+        num_gr = obj.groups_number
+        students = obj.students
+        attr = obj.attr
+        relevant_data = data_performing(data.loc[students, [ k for k,_ in attr]])
+        data_w = data_weighted(relevant_data, attr)
+        groups_kmean = get_groups_with_kmean(data_w, num_gr)
+        result.append(groups_kmean)
+
+    return result
 
     names = np.array(data["Nombre"] + " " + data["Apellidos"])
     data_transf = data_performing(

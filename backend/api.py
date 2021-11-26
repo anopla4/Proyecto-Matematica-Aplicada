@@ -32,10 +32,12 @@ async def upload_file(file: UploadFile = File(...)):
 
 @app.post("/groups")
 def group_processing(
-    sub_groups_specifications: dict = {},
-    relevants_feature: list = [],
-    weights: List[float] = [],
-    dict_parser_strategy: dict = {},
+    subset:dict,
+    types:dict
+    #sub_groups_specifications: dict = {},
+    #relevants_feature: list = [],
+    #weights: List[float] = [],
+    #dict_parser_strategy: dict = {},
 ):
     """
     sub_groups_specifications-> diccionario donde se definen las condiciones de los subgrupos
@@ -45,9 +47,11 @@ def group_processing(
     """
     groups = main_action(
         file_location,
-        sub_groups_specifications,
-        relevants_feature,
-        weights,
-        dict_parser_strategy,
+        subset,
+        types
+        #sub_groups_specifications,
+        #relevants_feature,
+        #weights,
+        #dict_parser_strategy,
     )
     return groups
