@@ -71,6 +71,8 @@ class Subset extends Component {
   }
 
   handleGenerateGroups = () => {
+    let s = this.state.subsets;
+    delete s[0];
     this.props.history.push({
       pathname: "/groups",
       state: {

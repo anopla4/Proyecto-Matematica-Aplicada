@@ -37,15 +37,16 @@ class Groups extends Component {
     ],
   };
 
-  componentWillMount() {
+  componentDidMount() {
     let d = this.props.location.state.data;
     let attributesType = this.props.location.state.attributesType;
     let subsets = this.props.location.state.subsets;
 
-    var formdata = new FormData();
-    formdata.append("subsets", subsets);
-
-    fetch("http://127.0.0.1:8000/groups", { method: "POST", body: formdata })
+    fetch("http://127.0.0.1:8000/groups", {
+      method: "POST",
+      body: JSON.stringify({ subset: subsets, types: attributesType }),
+      headers: { "Content-Type": "application/json" },
+    })
       .then(response => {
         if (!response.ok) {
           throw Error(response.statusText);
