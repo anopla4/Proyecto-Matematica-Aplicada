@@ -48,8 +48,8 @@ def group_processing(
     types  -> diccionario con el tipo de datos de cada atributo para el parser
     """
     groups = main_action(
-        file_location,
-        subset,
-        types
+        file_path=file_location,
+        subset=subset,
+        types= types
     )
     return dumps(groups)
