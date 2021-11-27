@@ -36,24 +36,20 @@ async def upload_file(file: UploadFile = File(...)):
 def group_processing(
     subset: dict,
     types: dict
-    # sub_groups_specifications: dict = {},
-    # relevants_feature: list = [],
-    # weights: List[float] = [],
-    # dict_parser_strategy: dict = {},
 ):
     """
-    sub_groups_specifications-> diccionario donde se definen las condiciones de los subgrupos
-    relevants_feature-> nombre de los feature a tener en cuenta para la distrbución de los grupos
-    weights-> peso de esos atributos relevantes dentro de la distribución
-    dict_parser_strategy -> indica el tipo de parser a ejcutar sobre un atributo
+    subset -> dicc de la forma #sub(int)-> Obj donde:
+        Obj = {
+            numberOfGroups:int  -> # de grupos de este subgupo
+            students:list[int] -> estudiantes que forman parte de este subgrupo
+            attributes:list[Tuple[string,float]] -> atributos relevantes para homogeneizar
+                                                    el subgupo y sus pesos respectivos
+        }
+    types  -> diccionario con el tipo de datos de cada atributo para el parser
     """
     groups = main_action(
         file_location,
         subset,
         types
-        # sub_groups_specifications,
-        # relevants_feature,
-        # weights,
-        # dict_parser_strategy,
     )
     return dumps(groups)

@@ -1,6 +1,4 @@
-import time
-from typing import Dict, List, Tuple
-from numpy.lib import type_check
+from typing import Dict, List
 import pandas as pd
 from pandas.core.frame import DataFrame
 from sklearn.preprocessing import StandardScaler
@@ -220,14 +218,9 @@ def data_performing(df: DataFrame) -> DataFrame:
     relevant_weights -> relevancia de los atributos de interés
     dict_parser_strategy -> indica el tipo de parser a ejcutar sobre un atributo
     """
-    relevant_data = df  # .loc[:, interesting_atribute]
-    # for atribute_name in dict_parser_strategy:
-    #    relevant_data[atribute_name] = dict_parsers_global[
-    #        dict_parser_strategy[atribute_name]
-    #    ](relevant_data[atribute_name])
+    relevant_data = df
     relevant_data = replace_bad_character(relevant_data)
     relevant_data = values_fill_na(relevant_data)
-    # relevant_data = fill_na(relevant_data)
     dict_values_to_prob, dict_atribute_rowsnan = __precomputing_nominal_fill_na__(
         relevant_data
     )
@@ -237,11 +230,6 @@ def data_performing(df: DataFrame) -> DataFrame:
     )
     sc = StandardScaler()
     relevant_data.loc[:, :] = sc.fit_transform(relevant_data)
-    # for i in range(len(relevant_weights)):
-    #     j = i
-    #     while relevant_data.columns.values[j].startswith(interesting_atribute[j]):
-    #         relevant_data.loc[:, j] *= relevant_weights[i]
-    #         j += 1
     return relevant_data
 
 
@@ -252,11 +240,3 @@ def data_weighted(df: DataFrame, attr: list([str, float])) -> DataFrame:
             if column.startswith(attr[i][0]):
                 relevant_data.loc[:, column] *= attr[i][1]
     return relevant_data
-
-
-def get_data_types(df: DataFrame) -> dict:
-    return df.dtypes.to_json()
-
-
-# df = to_dataFrame("files/filetemp.xlsx")
-# print(get_data_types(df))
