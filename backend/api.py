@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from main import main_action
 from data_processing import to_dataFrame
 from typing import List
+from json import dumps
 
 app = FastAPI()
 
@@ -55,4 +56,4 @@ def group_processing(
         # weights,
         # dict_parser_strategy,
     )
-    return groups
+    return dumps(groups)

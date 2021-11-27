@@ -1,12 +1,8 @@
-from typing import DefaultDict
 from collections import defaultdict
-import pandas as pd
 import numpy as np
 from data_processing import data_performing, data_weighted, to_dataFrame
 from kmean import get_groups_with_kmean
 from metaheuristic_solution import run, func
-from typing import List
-
 
 def main_action(
     file_path: str,
@@ -23,7 +19,7 @@ def main_action(
     """
     data = to_dataFrame(file_path)
 
-    result = []
+    result = {}
     # data_perf = data_performing(data)
     for sub, obj in subset.items():
         num_gr = int(obj["numberOfGroups"])
@@ -32,9 +28,13 @@ def main_action(
         relevant_data = data_performing(data.loc[students, [k for k, _ in attr]])
         data_w = data_weighted(relevant_data, attr)
         groups_kmean = get_groups_with_kmean(data_w, num_gr)
-        result.append(groups_kmean)
+        result[sub] = {}
+        for g in range(len(groups_kmean)):
+            result[sub][g] = groups_kmean[g]
 
     return result
+
+    
 
     names = np.array(data["Nombre"] + " " + data["Apellidos"])
     data_transf = data_performing(
@@ -126,6 +126,13 @@ def main_action(
         print(f"Provincia {province_1}")
 
     return groups_kmean
+
+# a = {1: {1: [1,2,4,5],
+#             2:[3,6,7]},
+#         2:{1:[7,8,9],
+#             2:[10,12,15]}}
+
+# print(dumps(a))
 
 
 def evaluate_kmean_solution(groups, data):
