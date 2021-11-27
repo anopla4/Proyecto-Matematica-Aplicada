@@ -45,7 +45,7 @@ class Statistics extends Component {
       data.labels.map(y => (attrCounts[y] = 0));
       this.props.data[this.state.attribute].map(z => attrCounts[z]++);
       data.datasets.push({
-        label: `Grupo ${x}`,
+        label: `Grupo ${parseInt(x) + 1}`,
         data: Object.values(attrCounts),
         backgroundColor: [this.generateColor()],
         borderColor: [this.generateColor],
@@ -69,7 +69,7 @@ class Statistics extends Component {
       );
 
       data.datasets.push({
-        label: `Grupo ${g}`,
+        label: `Grupo ${parseInt(g) + 1}`,
         data: d,
         backgroundColor: [this.generateColor()],
       });

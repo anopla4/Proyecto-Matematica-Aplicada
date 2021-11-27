@@ -10,23 +10,6 @@ class Groups extends Component {
     attributesType: undefined,
     subsetSelected: undefined,
     groups: {},
-    // groups: {
-    //   1: {
-    //     1: [0, 1],
-    //     2: [0, 1],
-    //     3: [0, 1],
-    //   },
-    //   2: {
-    //     4: [0, 1],
-    //     5: [0, 1],
-    //     6: [0, 1],
-    //   },
-    //   3: {
-    //     7: [0, 1],
-    //     8: [0, 1],
-    //     9: [0, 1],
-    //   },
-    // },
     subsets_colors: [
       "primary",
       "secondary",
@@ -103,7 +86,7 @@ class Groups extends Component {
                               ]
                             }
                           >
-                            Grupo {x}
+                            Grupo {parseInt(x) + 1}
                           </Button>
                         </Nav.Link>
                       </Nav.Item>
