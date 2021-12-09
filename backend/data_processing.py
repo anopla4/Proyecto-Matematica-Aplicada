@@ -6,7 +6,7 @@ import numpy as np
 from random import random
 from re import search
 
-def to_dataFrame(file_path: str, other_reader:function == None) -> DataFrame:
+def to_dataFrame(file_path: str, other_reader = None) -> DataFrame:
         """
         Dada la dirección del archivo retorna un dataFrame con los datos.
         
@@ -38,7 +38,7 @@ def to_dataFrame(file_path: str, other_reader:function == None) -> DataFrame:
 
 class DataProcessor:
 
-    def __replace_bad_character__(data: DataFrame) -> DataFrame:
+    def __replace_bad_character__(self, data: DataFrame) -> DataFrame:
         """
         data -> DataFrame completo incial
         Devuelve un dataframe donde se sustituyen por NaN todas las expresiones que indiquen
@@ -64,7 +64,7 @@ class DataProcessor:
         return DataFrame(new_data_set)
 
 
-    def __fill_na__(data: DataFrame) -> DataFrame:
+    def __fill_na__(self, data: DataFrame) -> DataFrame:
         """
         Asigna a los valores nan de un feature determinado un valor de los que este feature puede tomar utilizando
         la probabilidad de ocurrencia de cada uno de esos valores a partir de una función de probabilidad
@@ -95,7 +95,7 @@ class DataProcessor:
         return data
 
 
-    def __values_fill_na__(data: DataFrame) -> DataFrame:
+    def __values_fill_na__(self, data: DataFrame) -> DataFrame:
         """
         Rellena los valores nan de los atributos numéricos en el dataFrame original
         data-> dataFrame(data de entrada completa antes de dummy)
@@ -109,7 +109,7 @@ class DataProcessor:
         return data
 
 
-    def __precomputing_nominal_fill_na__(data: DataFrame):
+    def __precomputing_nominal_fill_na__(self, data: DataFrame):
         """
         Precomputa los diccionarios para la sustitución de los valores nan nominales
         """
@@ -133,7 +133,7 @@ class DataProcessor:
         return dict_values_to_prob, dict_atribute_rowsnan
 
 
-    def __nominal_fill_na__(
+    def __nominal_fill_na__(self,
         data: DataFrame, dict_values_to_prob: Dict, dict_atribute_rowsnan: Dict
     ) -> DataFrame:
         """
@@ -224,7 +224,7 @@ class DataProcessor:
     }
 
 
-    def data_performing(self,df: DataFrame) -> DataFrame:
+    def data_performing(self, df: DataFrame) -> DataFrame:
         """
         df-> data frame(data de entrada completa)
         interesting_atribute-> lista con el nombre de los atributos relevantes
@@ -246,7 +246,7 @@ class DataProcessor:
         return relevant_data
 
 
-    def data_weighted(df: DataFrame, attr: list([str, float])) -> DataFrame:
+    def data_weighted(self, df: DataFrame, attr: list([str, float])) -> DataFrame:
         """
         Asigna los pesos especificados a los atributos dentro del DataFrame
         Retorna un nuevo DataFrame con los valores actualizados

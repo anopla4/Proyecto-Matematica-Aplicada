@@ -6,7 +6,7 @@ def main_action(
     file_path: str,
     subset: dict,
     dataProcessor: DataProcessor = DataProcessor(),
-    group_performing: function = get_groups_with_kmean,
+    group_performing = get_groups_with_kmean,
     types: dict = None
 ):
     """
