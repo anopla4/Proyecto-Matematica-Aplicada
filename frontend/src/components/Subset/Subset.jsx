@@ -19,7 +19,7 @@ class Subset extends Component {
     selected: [],
     numberRows: 0,
     createSubset: false,
-    subsetAttributes: [],
+    subsetAttributes: {},
     studentsSubset: [],
     subsets: {},
     subsetOnScreen: 0,
@@ -124,7 +124,7 @@ class Subset extends Component {
 
   handleAcceptSubset = () => {
     let newSubset = {};
-    newSubset["attributes"] = [...this.state.subsetAttributes];
+    newSubset["attributes"] = Object.entries(this.state.subsetAttributes);
     newSubset["numberOfGroups"] = this.state.numberOfGroupsSubset;
     newSubset["students"] = [];
     let newSubsets = this.state.subsets;
@@ -133,7 +133,7 @@ class Subset extends Component {
       this.state.groupsAssigned + this.state.numberOfGroupsSubset;
     this.setState({
       createSubset: false,
-      subsetAttributes: [],
+      subsetAttributes: {},
       numberOfGroupsSubset: 1,
       subsets: newSubsets,
       groupsAssigned: groupsAssigned,
@@ -141,14 +141,14 @@ class Subset extends Component {
   };
 
   handleSelectAttributes = e => {
-    let attr = [];
-    e.map(x => attr.push([x, 1]));
+    let attr = {};
+    e.map(x => (attr[x] = 1));
     this.setState({ subsetAttributes: attr });
   };
 
   handleImportanceAttribute = e => {
-    let subsetAttr = [...this.state.subsetAttributes];
-    subsetAttr[e.target.id][1] = parseInt(e.target.value);
+    let subsetAttr = this.state.subsetAttributes;
+    subsetAttr[e.target.id] = parseInt(e.target.value);
     this.setState({ subsetAttributes: subsetAttr });
   };
 
@@ -331,7 +331,7 @@ class Subset extends Component {
                         />
                       </Form>
                       <ListGroup className="mt-3">
-                        {this.state.subsetAttributes.map(x => (
+                        {Object.entries(this.state.subsetAttributes).map(x => (
                           <ListGroup.Item>
                             {x[0]}{" "}
                             <Form.Range
