@@ -39,7 +39,7 @@ class Data extends Component {
     e.preventDefault();
     var formdata = new FormData();
     formdata.append("file", e.target.files[0], e.target.files[0].name);
-    fetch("http://127.0.0.1:8000/file", {
+    fetch("https://ourapigroups.herokuapp.com/file", {
       method: "POST",
       body: formdata,
     })

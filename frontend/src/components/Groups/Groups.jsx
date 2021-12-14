@@ -25,7 +25,7 @@ class Groups extends Component {
     let attributesType = this.props.location.state.attributesType;
     let subsets = this.props.location.state.subsets;
 
-    fetch("http://127.0.0.1:8000/groups", {
+    fetch("https://ourapigroups.herokuapp.com/groups", {
       method: "POST",
       body: JSON.stringify({ subset: subsets, types: attributesType }),
       headers: { "Content-Type": "application/json" },
