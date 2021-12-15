@@ -4,6 +4,8 @@ from main import main_action
 from data_processing import to_dataFrame
 from typing import List
 from json import dumps
+from kmean import get_groups_with_kmean
+from metaheuristic_solution import run
 
 app = FastAPI()
 
@@ -35,7 +37,8 @@ async def upload_file(file: UploadFile = File(...)):
 @app.post("/groups")
 def group_processing(
     subset: dict,
-    types: dict
+    types: dict,
+    method = "kmean"
 ):
     """
     subset -> dicc de la forma #sub(int)-> Obj donde:
@@ -47,9 +50,13 @@ def group_processing(
         }
     types  -> diccionario con el tipo de datos de cada atributo para el parser
     """
+    group_performing = get_groups_with_kmean
+    if method == "metaheuristic":
+        group_performing = run
     groups = main_action(
         file_path=file_location,
         subset=subset,
-        types= types
+        types= types,
+        group_performing= group_performing
     )
     return dumps(groups)

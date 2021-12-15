@@ -34,9 +34,9 @@ def main_action(
         attr = obj["attributes"]
         relevant_data = dataProcessor.data_performing(data.loc[students, [k for k, _ in attr]])
         data_w = dataProcessor.data_weighted(relevant_data, attr)
-        groups_kmean = group_performing(data_w, num_gr)
+        groups = group_performing(data_w, num_gr)
         subgroups[sub] = {}
-        for g in range(len(groups_kmean)):
-            subgroups[sub][g] = groups_kmean[g]
+        for g in range(len(groups)):
+            subgroups[sub][g] = groups[g]
 
     return subgroups
