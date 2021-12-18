@@ -43,7 +43,9 @@ class Statistics extends Component {
     Object.keys(this.props.groups).map(x => {
       let attrCounts = {};
       data.labels.map(y => (attrCounts[y] = 0));
-      this.props.data[this.state.attribute].map(z => attrCounts[z]++);
+      this.props.data[this.state.attribute]
+        .filter((_, i) => this.props.groups[x].includes(i))
+        .map(z => (attrCounts[z] += 1));
       data.datasets.push({
         label: `Grupo ${parseInt(x) + 1}`,
         data: Object.values(attrCounts),
