@@ -9,8 +9,8 @@ export const Features = (props) => {
               <div id="Simple" className='col-xs-6 col-md-3'>
                 <i className="fa fa-magic"></i>
                   <h3>Simple</h3>
-                  <p>Tan simple como desees. 
-                    En pocos clics tu solución</p>
+                  <p>Tan simple como desee. 
+                    En pocos clics su solución</p>
               </div>
               <div id="Data1" className='col-xs-6 col-md-3'>
                 <i  className="fa fa-cloud-upload"></i>
@@ -22,7 +22,7 @@ export const Features = (props) => {
               <div id="ia2" className='col-xs-6 col-md-3'>
                 <i className="fa fa-users"></i>
                   <h3>Clousters</h3>
-                  <p>Utilizamos algoritmos de cloustering para ofrecele la mejor solución</p>
+                  <p>Utilizamos algoritmos de cloustering para ofrecerle la mejor solución</p>
               </div>
               
               <div id="statadistic" className='col-xs-6 col-md-3'>

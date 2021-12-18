@@ -10,7 +10,7 @@ export const Header = (props) => {
                     KGrupos
                     <span></span>
                   </h1>
-                  <p>Una herramienta para la conformación de grupos, ahorramos tu tiempo,
+                  <p>Una herramienta para la conformación de grupos, ahorramos su tiempo,
                       lo hacemos con-ciencia.
                   </p>
                   <a
