@@ -24,10 +24,15 @@ class Groups extends Component {
     let d = this.props.location.state.data;
     let attributesType = this.props.location.state.attributesType;
     let subsets = this.props.location.state.subsets;
+    let method = this.props.location.state.method;
 
     fetch("https://ourapigroups.herokuapp.com/groups", {
       method: "POST",
-      body: JSON.stringify({ subset: subsets, types: attributesType }),
+      body: JSON.stringify({
+        subset: subsets,
+        types: attributesType,
+        method: method,
+      }),
       headers: { "Content-Type": "application/json" },
     })
       .then(response => {
