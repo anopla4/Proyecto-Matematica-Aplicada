@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Table, Row, Col, Form, Toast, Button } from "react-bootstrap";
 // import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
 import { withRouter } from "react-router-dom";
-import { transformData } from "../../utils";
+import { transformData, formatString } from "../../utils";
 import "./Data.css";
 
 class Data extends Component {
@@ -216,7 +216,7 @@ class Data extends Component {
               )}
             </Row>
             <Row>
-              <Button className="mt-5" onClick={this.handleClickContinue}>
+              <Button className="mt-5 mb-5" onClick={this.handleClickContinue}>
                 Continuar
               </Button>
             </Row>

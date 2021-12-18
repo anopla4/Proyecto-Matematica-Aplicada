@@ -3,6 +3,9 @@ import { Tab, Col, Row, Nav, Table, Button, Container } from "react-bootstrap";
 import Navigation from "../NavBar/NavBar";
 import { withRouter } from "react-router-dom";
 import Statistics from "../Statistics/Statistics";
+import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
+import { formatString } from "../../utils";
+import "./Groups.css";
 
 class Groups extends Component {
   state = {
@@ -18,19 +21,27 @@ class Groups extends Component {
       "danger",
       "light",
     ],
+    selectedAttributes: [],
   };
 
-  componentDidMount() {
+  componentWillMount() {
     let d = this.props.location.state.data;
     let attributesType = this.props.location.state.attributesType;
+
+    this.setState({
+      data: d,
+      attributesType: attributesType,
+    });
+  }
+
+  componentDidMount() {
     let subsets = this.props.location.state.subsets;
     let method = this.props.location.state.method;
-
     fetch("https://ourapigroups.herokuapp.com/groups", {
       method: "POST",
       body: JSON.stringify({
         subset: subsets,
-        types: attributesType,
+        types: this.state.attributesType,
         method: method,
       }),
       headers: { "Content-Type": "application/json" },
@@ -42,13 +53,13 @@ class Groups extends Component {
         return response.json();
       })
       .then(response => {
-        this.setState({ groups: JSON.parse(response) });
+        this.setState({
+          groups: JSON.parse(response),
+        });
       })
       .catch(function (error) {
         console.log("Hubo un problema con la petición Fetch:" + error.message);
       });
-
-    this.setState({ data: d, attributesType: attributesType });
   }
 
   handleAccept = () => {
@@ -63,18 +74,24 @@ class Groups extends Component {
     this.setState({ subsetSelected: undefined });
   };
 
+  handleSelectAttributes = e => {
+    this.setState({ selectedAttributes: e });
+  };
+
   render() {
     return (
       <Container style={{ margin: "3%" }}>
         {this.state.subsetSelected === undefined && (
           <Tab.Container id="list-group-tabs-example" defaultActiveKey={1}>
-            <Row>
-              <Navigation
-                items={this.state.groups}
-                attributesType={this.state.attributesType}
-                data={this.state.data}
-                onClick={this.handleSelectSubset}
-              />
+            <Row className="mb-3">
+              <Col>
+                <Navigation
+                  items={this.state.groups}
+                  attributesType={this.state.attributesType}
+                  data={this.state.data}
+                  onClick={this.handleSelectSubset}
+                />
+              </Col>
             </Row>
             <Row>
               <Col md={3}>
@@ -100,19 +117,27 @@ class Groups extends Component {
                 </Nav>
               </Col>
               <Col md={1}></Col>
-              <Col md={5}>
+              <Col className="tab" md={5}>
                 <Tab.Content>
                   {Object.keys(this.state.groups).map(t =>
                     Object.keys(this.state.groups[t]).map(x => (
                       <Tab.Pane eventKey={x}>
                         <Table bordered striped hover>
                           <thead>
-                            <th>Nombre</th>
+                            {this.state.selectedAttributes.map(x => (
+                              <th>{x}</th>
+                            ))}
                           </thead>
                           <tbody>
                             {this.state.groups[t][x].map(y => (
                               <tr>
-                                <td>{this.state.data.Nombre[y]}</td>
+                                {this.state.selectedAttributes.map(x => (
+                                  <td>
+                                    {typeof this.state.data[x][y] === "string"
+                                      ? formatString(this.state.data[x][y])
+                                      : this.state.data[x][y]}
+                                  </td>
+                                ))}
                               </tr>
                             ))}
                           </tbody>
@@ -122,8 +147,18 @@ class Groups extends Component {
                   )}
                 </Tab.Content>
               </Col>
+              <Col md={3}>
+                <DropdownMultiselect
+                  className="selectionBox"
+                  style={{ width: "40%" }}
+                  placeholder="Seleccione los atributos relevantes..."
+                  handleOnChange={this.handleSelectAttributes}
+                  options={Object.keys(this.state.data)}
+                  name="attributes"
+                />
+              </Col>
             </Row>
-            <Row>
+            <Row className="mt-3 mb-5">
               <Col className="d-flex align-items-end justify-content-end">
                 <Button onClick={this.handleAccept}>Aceptar</Button>
               </Col>
