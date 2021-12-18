@@ -1,16 +1,9 @@
 import React, { Component } from "react";
-import {
-  Table,
-  Row,
-  Col,
-  Form,
-  Toast,
-  Button,
-  Container,
-} from "react-bootstrap";
-import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
+import { Table, Row, Col, Form, Toast, Button } from "react-bootstrap";
+// import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
 import { withRouter } from "react-router-dom";
 import { transformData } from "../../utils";
+import "./Data.css";
 
 class Data extends Component {
   state = {
@@ -121,17 +114,14 @@ class Data extends Component {
             <Form.Control onChange={this.handleFileUpload} type="file" />
           </Form.Group>
         </Row>
-
         <Row>
-          <Col>
+          <Col className="tabCol">
             {this.state.data !== undefined && (
               <Table bordered striped hover className="mt-5">
                 <thead>
-                  {Object.keys(this.state.data)
-                    .filter(x => this.state.showedAttributes.includes(x))
-                    .map(x => (
-                      <th>{x}</th>
-                    ))}
+                  {Object.keys(this.state.data).map(x => (
+                    <th>{x}</th>
+                  ))}
                 </thead>
                 <tbody>
                   {transformData(
@@ -148,34 +138,23 @@ class Data extends Component {
               </Table>
             )}
           </Col>
-          {this.state.data !== undefined && (
-            <Col md={3}>
-              {this.state.numberOfAttributesToBig && (
-                <Toast onClose={this.closeToast}>
-                  <Toast.Header>
-                    <strong className="me-auto">¡Atención!</strong>
-                  </Toast.Header>
-                  <Toast.Body>
-                    Para visibilizar bien la información solo se mostrarán cinco
-                    propiedades como máximo.
-                  </Toast.Body>
-                </Toast>
-              )}
-              <DropdownMultiselect
-                handleOnChange={this.handleSelectAttributes}
-                selected={this.state.showedAttributes}
-                options={Object.keys(this.state.data)}
-                name="attributes"
-              />
-              <Container className="mt-5">
-                <h6>Seleccione el tipo de atributo en cada caso</h6>
-                {Object.keys(this.state.data).map(x => (
-                  <Row className="mt-2">
-                    <p>{x}: </p>
+        </Row>
+        {this.state.data !== undefined && (
+          <Row className="mt-5">
+            <h4>Seleccione el tipo de atributo en cada caso</h4>
+            {Array.from({
+              length: Object.keys(this.state.data).length / 4,
+            }).map((_, i) => (
+              <Row>
+                {Array.from({
+                  length: 4,
+                }).map((_, j) => (
+                  <Col>
+                    <p>{Object.keys(this.state.data)[i * 4 + j]}: </p>
                     <Form>
                       <Form.Select
                         onChange={this.handleTypeAttributes}
-                        id={x}
+                        id={Object.keys(this.state.data)[4 * i + j]}
                         aria-label="attribute type"
                       >
                         <option></option>
@@ -183,12 +162,45 @@ class Data extends Component {
                         <option value="2">Numérico</option>
                       </Form.Select>
                     </Form>
-                  </Row>
+                  </Col>
                 ))}
-              </Container>
-            </Col>
-          )}
-        </Row>
+              </Row>
+            ))}
+            {Object.keys(this.state.data).length % 4 !== 0 && (
+              <Row>
+                {Array.from({
+                  length: Object.keys(this.state.data).length % 4,
+                }).map((_, j) => (
+                  <Col>
+                    <p>
+                      {
+                        Object.keys(this.state.data)[
+                          (4 * Object.keys(this.state.data).length) / 4 + j
+                        ]
+                      }
+                      :{" "}
+                    </p>
+                    <Form>
+                      <Form.Select
+                        onChange={this.handleTypeAttributes}
+                        id={
+                          Object.keys(this.state.data)[
+                            (4 * Object.keys(this.state.data).length) / 4 + j
+                          ]
+                        }
+                        aria-label="attribute type"
+                      >
+                        <option></option>
+                        <option value="1">Nominal</option>
+                        <option value="2">Numérico</option>
+                      </Form.Select>
+                    </Form>
+                  </Col>
+                ))}
+              </Row>
+            )}
+          </Row>
+        )}
         <Row>
           <Col className="d-flex align-items-end justify-content-end">
             <Row>

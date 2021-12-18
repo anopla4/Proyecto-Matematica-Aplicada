@@ -67,12 +67,9 @@ function create_partition(dataset, constrains, subset_size) {
   return subset;
 }
 
-function transformData(data, showedAttributes) {
+function transformData(data) {
   let m = [];
-  let showedAttr = Object.entries(data).filter(x =>
-    showedAttributes.includes(x[0])
-  );
-  showedAttr.map(x => m.push(x[1]));
+  Object.entries(data).map(x => m.push(x[1]));
   return m[0].map((_, colIndex) => m.map(row => row[colIndex]));
 }
 
