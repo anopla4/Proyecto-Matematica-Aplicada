@@ -1,5 +1,16 @@
 import React, { Component } from "react";
-import { Col, Row, Button, Form, ListGroup, Tabs, Tab } from "react-bootstrap";
+import {
+  Col,
+  Row,
+  Button,
+  Form,
+  ListGroup,
+  Tabs,
+  Tab,
+  ButtonGroup,
+  Tooltip,
+  OverlayTrigger,
+} from "react-bootstrap";
 import BootstrapTable from "react-bootstrap-table-next";
 import filterFactory, {
   numberFilter,
@@ -8,6 +19,9 @@ import filterFactory, {
 import { withRouter } from "react-router-dom";
 import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
 import { transformDataBootstrapTable } from "../../utils";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import Overlay from "react-overlay-component";
+import "./Subset.css";
 
 class Subset extends Component {
   state = {
@@ -25,6 +39,8 @@ class Subset extends Component {
     subsetOnScreen: 0,
     subsetToBeAdded: 0,
     groupsAssigned: 0,
+    method: "kmean",
+    advancedOptions: false,
   };
 
   componentWillMount() {
@@ -79,6 +95,7 @@ class Subset extends Component {
         data: this.state.data,
         attributesType: this.state.attributesType,
         subsets: this.state.subsets,
+        method: this.state.method,
       },
     });
   };
@@ -189,19 +206,30 @@ class Subset extends Component {
     }
   };
 
+  handleAdvancedOptions = () => {
+    this.setState({ advancedOptions: true });
+  };
+
   render() {
+    const configs = {
+      animate: true,
+      // top: `5em`,
+      // clickDismiss: false,
+      // escapeDismiss: false,
+      // focusOutline: false,
+    };
     return (
-      <Row style={{ margin: "3%" }}>
+      <Row className="mb-3" style={{ margin: "3%" }}>
         <Row>
           <Col className="d-flex align-items-center justify-content-center">
-            <h3>Configurar subconjuntos</h3>
+            <h3>Particione los datos</h3>
           </Col>
         </Row>
         <Row className="mt-5">
           <Col md={3}>
             <h6>Elija la cantidad de grupos total que quiere: </h6>
           </Col>
-          <Col md={1}>
+          <Col md={2}>
             <Form>
               <Form.Control
                 onChange={this.handleChangeNumberGroups}
@@ -209,6 +237,12 @@ class Subset extends Component {
                 type="number"
               ></Form.Control>
             </Form>
+          </Col>
+          <Col></Col>
+          <Col md={3}>
+            <Button onClick={this.handleCreateSubset} variant="success">
+              Crear subconjunto
+            </Button>
           </Col>
         </Row>
         <Tabs
@@ -223,9 +257,9 @@ class Subset extends Component {
               title={x === "0" ? "Sin asignar" : `Subconjunto ${x}`}
             >
               <Row>
-                <Col md={9}>
+                <Col>
                   <Row>
-                    <Col style={{ overflow: "scroll" }}>
+                    <Col style={{ overflow: "scroll", maxHeight: "100vh" }}>
                       <BootstrapTable
                         keyField="id"
                         data={transformDataBootstrapTable(
@@ -253,9 +287,9 @@ class Subset extends Component {
                   </Row>
                   {x === "0" && (
                     <Row className="mt-3">
-                      <Col md={7}>
-                        <Row>
-                          <Col md={6}>
+                      <Col md={6}>
+                        <ButtonGroup>
+                          <Col md={10}>
                             <Button
                               onClick={this.handleAssignStudentsToSubset}
                               variant="secondary"
@@ -263,7 +297,7 @@ class Subset extends Component {
                               Asignar estudiantes al subconjunto{" "}
                             </Button>
                           </Col>
-                          <Col md={2}>
+                          <Col>
                             <Form.Control
                               onChange={this.handleOnChangeSubsetToBeAdded}
                               min={0}
@@ -271,12 +305,12 @@ class Subset extends Component {
                               type="number"
                             />
                           </Col>
-                        </Row>
+                        </ButtonGroup>
                       </Col>
                     </Row>
                   )}
                   {x !== "0" && (
-                    <Row>
+                    <Row className="mt-3">
                       <Col md={7}>
                         <Button
                           variant="danger"
@@ -288,48 +322,68 @@ class Subset extends Component {
                     </Row>
                   )}
                 </Col>
-                <Col md={3}>
-                  <Row style={{ paddingLeft: "20%" }}>
-                    <Button
-                      style={{ width: "70%", float: "right" }}
-                      onClick={this.handleCreateSubset}
-                      variant="success"
-                    >
-                      Crear subconjunto
-                    </Button>
+              </Row>
+              <Overlay
+                configs={configs}
+                isOpen={this.state.createSubset}
+                closeOverlay={() =>
+                  this.setState({
+                    createSubset: false,
+                    subsetAttributes: {},
+                    numberOfGroupsSubset: 1,
+                  })
+                }
+              >
+                <Row>
+                  <Row>
+                    <Col className="d-flex align-items-center justify-content-center">
+                      <h3>Configurar subconjunto</h3>
+                    </Col>
                   </Row>
-                  {this.state.createSubset && (
-                    <Row style={{ paddingLeft: "10%" }} className="mt-5">
-                      <Form>
-                        <Form.Label>
-                          <h6>
-                            Elija la cantidad de grupos para este subconjunto
-                          </h6>
-                        </Form.Label>
-                        <Form.Control
-                          onChange={this.handleChangeNumberGroupsSubset}
-                          min={1}
-                          max={
-                            this.state.numberOfGroups -
-                            this.state.groupsAssigned
-                          }
-                          type="number"
-                          style={{ width: "20%" }}
-                        />
-                        <Form.Label className="mt-3">
-                          <h6>
-                            Elija los atributos importantes para este
-                            subconjunto
-                          </h6>
-                        </Form.Label>
-                        <DropdownMultiselect
-                          style={{ width: "40%" }}
-                          placeholder="Seleccione los atributos relevantes..."
-                          handleOnChange={this.handleSelectAttributes}
-                          options={Object.keys(this.state.data)}
-                          name="attributes"
-                        />
-                      </Form>
+                  <Row>
+                    <Form>
+                      <Row>
+                        <Col>
+                          <Form.Label>
+                            <h6>
+                              Elija la cantidad de grupos para este subconjunto
+                            </h6>
+                          </Form.Label>
+                          <Form.Control
+                            onChange={this.handleChangeNumberGroupsSubset}
+                            min={1}
+                            max={
+                              this.state.numberOfGroups -
+                              this.state.groupsAssigned
+                            }
+                            type="number"
+                            style={{ width: "20%" }}
+                          />
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <Form.Label className="mt-3">
+                            <h6>
+                              Elija los atributos importantes para este
+                              subconjunto
+                            </h6>
+                          </Form.Label>
+                          {this.state.createSubset && (
+                            <DropdownMultiselect
+                              style={{ width: "40%" }}
+                              placeholder="Seleccione los atributos relevantes..."
+                              handleOnChange={this.handleSelectAttributes}
+                              options={Object.keys(this.state.data)}
+                              name="attributes"
+                            />
+                          )}
+                        </Col>
+                      </Row>
+                    </Form>
+                  </Row>
+                  <Row className="attrImportance">
+                    <Col>
                       <ListGroup className="mt-3">
                         {Object.entries(this.state.subsetAttributes).map(x => (
                           <ListGroup.Item>
@@ -344,6 +398,10 @@ class Subset extends Component {
                           </ListGroup.Item>
                         ))}
                       </ListGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col className="d-flex align-items-end justify-content-end">
                       <Button
                         style={{ width: "25%" }}
                         variant="primary"
@@ -352,17 +410,69 @@ class Subset extends Component {
                       >
                         Aceptar
                       </Button>
-                    </Row>
-                  )}
-                </Col>
-              </Row>
+                    </Col>
+                  </Row>
+                </Row>
+              </Overlay>
             </Tab>
           ))}
         </Tabs>
 
-        <Row>
+        <Row className="mt-3 mb-3">
           <Col className="d-flex align-items-end justify-content-end">
-            <Button onClick={this.handleGenerateGroups}>Generar grupos</Button>
+            <ButtonGroup>
+              <Button onClick={this.handleGenerateGroups}>
+                Generar grupos
+              </Button>
+              <OverlayTrigger
+                placement="top"
+                overlay={
+                  <Tooltip id={"advancedOptions"}>Opciones avanzadas</Tooltip>
+                }
+              >
+                <Button onClick={this.handleAdvancedOptions}>
+                  <BsThreeDotsVertical />
+                </Button>
+              </OverlayTrigger>
+            </ButtonGroup>
+            <Overlay
+              configs={configs}
+              isOpen={this.state.advancedOptions}
+              closeOverlay={() =>
+                this.setState({
+                  advancedOptions: false,
+                })
+              }
+            >
+              <Row>
+                <Col>
+                  <h4>
+                    Elija el método que quiere utilizar para la conformación de
+                    los grupos
+                  </h4>
+                </Col>
+              </Row>
+              <Row>
+                <Form>
+                  <Form.Check
+                    onClick={() => this.setState({ method: "kmean" })}
+                    checked={this.state.method === "kmean"}
+                    type="radio"
+                    id="kmean"
+                    label="K-means"
+                    name="K-means"
+                  />
+                  <Form.Check
+                    onClick={() => this.setState({ method: "methauristic" })}
+                    checked={this.state.method === "methauristic"}
+                    type="radio"
+                    id="metaheuristic"
+                    label="Metaheurística"
+                    name="Metaheurística"
+                  />
+                </Form>
+              </Row>
+            </Overlay>
           </Col>
         </Row>
       </Row>
