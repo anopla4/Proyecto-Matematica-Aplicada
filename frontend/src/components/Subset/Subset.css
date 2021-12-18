@@ -14,3 +14,8 @@
   height: 20vh;
   overflow-y: auto;
 }
+
+.selectionBox {
+  overflow-y: auto;
+  max-height: 40vh;
+}

@@ -214,8 +214,8 @@ class Subset extends Component {
     const configs = {
       animate: true,
       // top: `5em`,
-      // clickDismiss: false,
-      // escapeDismiss: false,
+      clickDismiss: false,
+      escapeDismiss: false,
       // focusOutline: false,
     };
     return (
@@ -371,6 +371,7 @@ class Subset extends Component {
                           </Form.Label>
                           {this.state.createSubset && (
                             <DropdownMultiselect
+                              className="selectionBox"
                               style={{ width: "40%" }}
                               placeholder="Seleccione los atributos relevantes..."
                               handleOnChange={this.handleSelectAttributes}
