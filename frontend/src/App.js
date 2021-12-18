@@ -8,20 +8,23 @@ import Data from "./components/Data/Data";
 import Groups from "./components/Groups/Groups";
 import Statistics from "./components/Statistics/Statistics";
 import Subset from "./components/Subset/Subset";
+import ScrollTop from "./components/ScrollTop/ScrollTop";
 class App extends Component {
   render() {
     return (
       <BrowserRouter>
-        <Layout>
-          <Switch>
-            <Route path="/" exact component={Home} />
-            <Route path="/settings" component={Settings} />
-            <Route path="/data" component={Data} />
-            <Route path="/groups" component={Groups} />
-            <Route path="/statistics" component={Statistics} />
-            <Route path="/subset" component={Subset} />
-          </Switch>
-        </Layout>
+        <ScrollTop>
+          <Layout>
+            <Switch>
+              <Route path="/" exact component={Home} />
+              <Route path="/settings" component={Settings} />
+              <Route path="/data" component={Data} />
+              <Route path="/groups" component={Groups} />
+              <Route path="/statistics" component={Statistics} />
+              <Route path="/subset" component={Subset} />
+            </Switch>
+          </Layout>
+        </ScrollTop>
       </BrowserRouter>
     );
   }
