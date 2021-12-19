@@ -1,7 +1,8 @@
 .styles_overlay-wrapper__O0Zm8 .styles_overlay-content__1qZR_ {
   padding: 2em;
   background-color: white;
-  max-width: 600px;
+  max-width: 100%;
+  width: 70%;
   position: relative;
   margin: auto;
   transition: opacity 0.85s;
@@ -15,7 +16,21 @@
   overflow-y: auto;
 }
 
-.selectionBox {
+.dropdown-menu {
+  position: absolute;
+  z-index: 1000;
+  display: none;
+  min-width: 10rem;
+  padding: 0.5rem 0;
+  margin: 0;
+  font-size: 1rem;
+  color: #212529;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
   overflow-y: auto;
   max-height: 40vh;
 }

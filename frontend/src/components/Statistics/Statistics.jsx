@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Bar, Scatter } from "react-chartjs-2";
 import { Row, Col, Container, Form } from "react-bootstrap";
+import { removeRepeated } from "../../utils";
 
 class Statistics extends Component {
   state = {
@@ -24,13 +25,7 @@ class Statistics extends Component {
 
   transformDataBar = () => {
     let data = {
-      labels: this.props.data[this.state.attribute].filter(function (
-        elem,
-        index,
-        self
-      ) {
-        return index === self.indexOf(elem);
-      }),
+      labels: removeRepeated(this.props.data[this.state.attribute]),
       datasets: [],
     };
     let options = {

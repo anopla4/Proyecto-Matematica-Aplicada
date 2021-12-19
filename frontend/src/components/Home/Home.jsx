@@ -1,4 +1,3 @@
-import { Navigation } from "./home_components/navigation";
 import { Header } from "./home_components/header";
 import { Features } from "./home_components/feature";
 import { About } from "./home_components/about";

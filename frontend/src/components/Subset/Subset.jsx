@@ -18,9 +18,10 @@ import filterFactory, {
 } from "react-bootstrap-table2-filter";
 import { withRouter } from "react-router-dom";
 import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
-import { transformDataBootstrapTable } from "../../utils";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import Overlay from "react-overlay-component";
+import Restriction from "../Restriction/Restriction";
+import { transformDataBootstrapTable, removeRepeated } from "../../utils";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import "./Subset.css";
 
 class Subset extends Component {
@@ -41,6 +42,8 @@ class Subset extends Component {
     groupsAssigned: 0,
     method: "kmean",
     advancedOptions: false,
+    restrictions: {},
+    subsetNoCompleted: false,
   };
 
   componentWillMount() {
@@ -144,7 +147,47 @@ class Subset extends Component {
     newSubset["attributes"] = Object.entries(this.state.subsetAttributes);
     newSubset["numberOfGroups"] = this.state.numberOfGroupsSubset;
     newSubset["students"] = [];
-    let newSubsets = this.state.subsets;
+    let newSubsets = { ...this.state.subsets };
+    let students = [];
+    Object.keys(this.state.restrictions).map(r => {
+      let l = [];
+      this.state.data[r].map((x, index) => {
+        let minB = this.state.restrictions[r]["minBound"];
+        let maxB = this.state.restrictions[r]["minBound"];
+        let values = this.state.restrictions[r]["values"];
+        if (
+          minB !== undefined &&
+          maxB !== undefined &&
+          minB <= x &&
+          maxB >= x
+        ) {
+          l.push(index);
+        } else if (minB !== undefined && minB <= x) {
+          l.push(index);
+        } else if (maxB !== undefined && maxB >= x) {
+          l.push(index);
+        } else if (values !== undefined && values.includes(x)) {
+          l.push(index);
+        }
+        return 0;
+      });
+      students = students.concat(l);
+      return 0;
+    });
+    let numberStudentsGroup = this.state.numberRows / this.state.numberOfGroups;
+    let subsetNoCompleted = false;
+    if (
+      students.length <=
+        (numberStudentsGroup - 2) * this.state.numberOfGroupsSubset ||
+      students.length >=
+        (numberStudentsGroup + 2) * this.state.numberOfGroupsSubset
+    ) {
+      subsetNoCompleted = true;
+    }
+    newSubset["students"] = removeRepeated(students);
+    newSubsets[0] = newSubsets[0].filter(
+      x => !newSubset["students"].includes(x)
+    );
     newSubsets[Object.keys(this.state.subsets).length] = newSubset;
     let groupsAssigned =
       this.state.groupsAssigned + this.state.numberOfGroupsSubset;
@@ -154,7 +197,26 @@ class Subset extends Component {
       numberOfGroupsSubset: 1,
       subsets: newSubsets,
       groupsAssigned: groupsAssigned,
+      subsetNoCompleted: subsetNoCompleted,
     });
+  };
+
+  handleMinBound = (e, index) => {
+    let rest = this.state.restrictions;
+    rest[index]["minBound"] = e.target.value;
+    this.setState({ restrictions: rest });
+  };
+
+  handleMaxBound = (e, index) => {
+    let rest = this.state.restrictions;
+    rest[index]["maxBound"] = e.target.value;
+    this.setState({ restrictions: rest });
+  };
+
+  handleSelectValues = (e, index) => {
+    let rest = this.state.restrictions;
+    rest[index]["values"] = e;
+    this.setState({ restrictions: rest });
   };
 
   handleSelectAttributes = e => {
@@ -208,6 +270,15 @@ class Subset extends Component {
 
   handleAdvancedOptions = () => {
     this.setState({ advancedOptions: true });
+  };
+
+  handleSelectRestrictions = e => {
+    let rest = { ...this.state.restrictions };
+    let newRest = {};
+    e.map(x =>
+      Object.keys(rest).includes(x) ? (newRest[x] = rest[x]) : (newRest[x] = {})
+    );
+    this.setState({ restrictions: newRest });
   };
 
   render() {
@@ -362,45 +433,90 @@ class Subset extends Component {
                         </Col>
                       </Row>
                       <Row>
-                        <Col>
-                          <Form.Label className="mt-3">
-                            <h6>
-                              Elija los atributos importantes para este
-                              subconjunto
-                            </h6>
-                          </Form.Label>
-                          {this.state.createSubset && (
-                            <DropdownMultiselect
-                              className="selectionBox"
-                              style={{ width: "40%" }}
-                              placeholder="Seleccione los atributos relevantes..."
-                              handleOnChange={this.handleSelectAttributes}
-                              options={Object.keys(this.state.data)}
-                              name="attributes"
-                            />
-                          )}
+                        <Col md={6}>
+                          <Row>
+                            <Col>
+                              <Form.Label className="mt-3">
+                                <h6>
+                                  Elija los atributos importantes para este
+                                  subconjunto
+                                </h6>
+                              </Form.Label>
+                              {this.state.createSubset && (
+                                <DropdownMultiselect
+                                  style={{ width: "40%" }}
+                                  placeholder="Seleccione los atributos relevantes..."
+                                  handleOnChange={this.handleSelectAttributes}
+                                  options={Object.keys(this.state.data)}
+                                  name="attributes"
+                                />
+                              )}
+                            </Col>
+                          </Row>
+
+                          <Row className="attrImportance">
+                            <Col>
+                              <ListGroup className="mt-3">
+                                {Object.entries(
+                                  this.state.subsetAttributes
+                                ).map(x => (
+                                  <ListGroup.Item>
+                                    {x[0]}{" "}
+                                    <Form.Range
+                                      id={x[0]}
+                                      defaultValue={x[1]}
+                                      min={0.1}
+                                      max={10}
+                                      onChange={this.handleImportanceAttribute}
+                                    />
+                                  </ListGroup.Item>
+                                ))}
+                              </ListGroup>
+                            </Col>
+                          </Row>
+                        </Col>
+                        <Col md={6}>
+                          <Row>
+                            <Col>
+                              <Form.Label className="mt-3">
+                                <h6>
+                                  Elija las restricciones para este subconjunto
+                                </h6>
+                              </Form.Label>
+                              {this.state.createSubset && (
+                                <DropdownMultiselect
+                                  style={{ width: "40%" }}
+                                  placeholder="Seleccione los atributos..."
+                                  handleOnChange={this.handleSelectRestrictions}
+                                  options={Object.keys(this.state.data)}
+                                  name="attributes"
+                                />
+                              )}
+                            </Col>
+                          </Row>
+                          <Row className="attrImportance">
+                            <Col>
+                              {Object.keys(this.state.restrictions).map(x => (
+                                <Restriction
+                                  attribute={x}
+                                  type={this.state.attributesType[x]}
+                                  handleMaxBound={this.handleMaxBound}
+                                  handleMinBound={this.handleMinBound}
+                                  handleSelectValues={this.handleSelectValues}
+                                  values={
+                                    this.state.attributesType[x] === "Nominal"
+                                      ? removeRepeated(this.state.data[x])
+                                      : []
+                                  }
+                                />
+                              ))}
+                            </Col>
+                          </Row>
                         </Col>
                       </Row>
                     </Form>
                   </Row>
-                  <Row className="attrImportance">
-                    <Col>
-                      <ListGroup className="mt-3">
-                        {Object.entries(this.state.subsetAttributes).map(x => (
-                          <ListGroup.Item>
-                            {x[0]}{" "}
-                            <Form.Range
-                              id={x[0]}
-                              defaultValue={x[1]}
-                              min={0.1}
-                              max={10}
-                              onChange={this.handleImportanceAttribute}
-                            />
-                          </ListGroup.Item>
-                        ))}
-                      </ListGroup>
-                    </Col>
-                  </Row>
+
                   <Row>
                     <Col className="d-flex align-items-end justify-content-end">
                       <Button

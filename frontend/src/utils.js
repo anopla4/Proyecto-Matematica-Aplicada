@@ -97,9 +97,17 @@ function formatString(str) {
 
   return arr.join(" ");
 }
+
+function removeRepeated(l) {
+  return l.filter(function (elem, index, self) {
+    return index === self.indexOf(elem);
+  });
+}
+
 export {
   create_partition,
   transformDataBootstrapTable,
   transformData,
   formatString,
+  removeRepeated,
 };
