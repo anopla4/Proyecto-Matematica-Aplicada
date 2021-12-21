@@ -34,3 +34,33 @@
   overflow-y: auto;
   max-height: 40vh;
 }
+
+/* .nav-link {
+  background-color: red;
+} */
+
+@keyframes wrong {
+  0% {
+    box-shadow: 2px -2px 3px 0 white, -2px 2px 3px 0 white, 2px 2px 3px 0 white,
+      -2px -2px 3px 0 white;
+  }
+  25% {
+    box-shadow: 2px -2px 3px 0 rgb(230, 61, 61), -2px 2px 3px 0 rgb(230, 61, 61),
+      2px 2px 3px 0 rgb(230, 61, 61), -2px -2px 3px 0 rgb(230, 61, 61);
+  }
+  50% {
+    box-shadow: 2px -2px 3px 0 white, -2px 2px 3px 0 white, 2px 2px 3px 0 white,
+      -2px -2px 3px 0 white;
+  }
+  100% {
+    box-shadow: 2px -2px 3px 0 rgb(230, 61, 61), -2px 2px 3px 0 rgb(230, 61, 61),
+      2px 2px 3px 0 rgb(230, 61, 61), -2px -2px 3px 0 rgb(230, 61, 61);
+  }
+}
+
+#tab-override .stateWrong {
+  box-shadow: 2px -2px 3px 0 rgb(230, 61, 61), -2px 2px 3px 0 rgb(230, 61, 61),
+    2px 2px 3px 0 rgb(230, 61, 61), -2px -2px 3px 0 rgb(230, 61, 61);
+  animation-name: wrong;
+  animation-duration: 4s;
+}
