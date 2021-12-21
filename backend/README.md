@@ -7,7 +7,7 @@ python >= 3.9.2 and functional pip command
 
 ## Project setup
 ```
-pip install requeriments.txt
+pip install requirements.txt
 ```
 
 ### Load the server locally
