@@ -3,7 +3,6 @@ from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from main import main_action
 from data_processing import to_dataFrame
-from typing import List
 from json import dumps
 from kmean import get_groups_with_kmean
 from metaheuristic_solution import run
@@ -73,10 +72,10 @@ def group_processing(
     """
     subset -> dicc de la forma #sub(int)-> Obj donde:
         Obj = {
-            numberOfGroups:int  -> # de grupos de este subgupo
+            numberOfGroups:int  -> # de grupos de este subgrupo
             students:list[int] -> estudiantes que forman parte de este subgrupo
             attributes:list[Tuple[string,float]] -> atributos relevantes para homogeneizar
-                                                    el subgupo y sus pesos respectivos
+                                                    el subgrupo y sus pesos respectivos
         }
     types  -> diccionario con el tipo de datos de cada atributo para el parser
     """
