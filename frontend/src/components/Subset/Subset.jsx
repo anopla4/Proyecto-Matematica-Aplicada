@@ -46,6 +46,9 @@ class Subset extends Component {
     restrictions: {},
     subsetNoCompleted: false,
     toastSubsetNotCompleted: false,
+    importantAttributeSelected: true,
+    numberOfSubsetGroupsSelected: false,
+    invalidNumberOfGroups: false,
   };
 
   componentWillMount() {
@@ -139,6 +142,8 @@ class Subset extends Component {
   handleChangeNumberGroupsSubset = e => {
     this.setState({
       numberOfGroupsSubset: e.target.value,
+      numberOfSubsetGroupsSelected: true,
+      invalidNumberOfGroups: false,
     });
   };
 
@@ -148,45 +153,64 @@ class Subset extends Component {
   };
 
   handleAcceptSubset = () => {
+    if (!this.state.numberOfSubsetGroupsSelected) {
+      this.setState({ invalidNumberOfGroups: true });
+      return;
+    }
+    if (Object.keys(this.state.subsetAttributes).length === 0) {
+      this.setState({ importantAttributeSelected: false });
+      return;
+    }
     let newSubset = {};
     newSubset["attributes"] = Object.entries(this.state.subsetAttributes);
     newSubset["numberOfGroups"] = this.state.numberOfGroupsSubset;
     newSubset["students"] = [];
     let newSubsets = { ...this.state.subsets };
     let students = [];
-    Object.keys(this.state.restrictions).map(r => {
-      let l = [];
-      this.state.data[r].map((x, index) => {
-        let minB = this.state.restrictions[r]["minBound"];
-        let maxB = this.state.restrictions[r]["minBound"];
-        let values = this.state.restrictions[r]["values"];
-        if (
-          minB !== undefined &&
-          maxB !== undefined &&
-          parseFloat(minB) <= parseFloat(x) &&
-          parseFloat(maxB) >= parseFloat(x)
-        ) {
-          l.push(index);
-        } else if (
-          minB !== undefined &&
-          maxB === undefined &&
-          parseFloat(minB) <= parseFloat(x)
-        ) {
-          l.push(index);
-        } else if (
-          maxB !== undefined &&
-          minB === undefined &&
-          parseFloat(maxB) >= parseFloat(x)
-        ) {
-          l.push(index);
-        } else if (values !== undefined && values.includes(x)) {
-          l.push(index);
-        }
-        return 0;
-      });
-      students = students.concat(l);
-      return 0;
-    });
+    if (
+      Object.keys(this.state.restrictions).filter(
+        x => Object.keys(this.state.restrictions[x]).length > 0
+      ).length === 0
+    )
+      students = this.state.subsets[0];
+    else {
+      Object.keys(this.state.restrictions)
+        .filter(x => Object.keys(this.state.restrictions[x]).length > 0)
+        .map(r => {
+          let l = [];
+          this.state.data[r].map((x, index) => {
+            let minB = this.state.restrictions[r]["minBound"];
+            let maxB = this.state.restrictions[r]["minBound"];
+            let values = this.state.restrictions[r]["values"];
+            if (
+              minB !== undefined &&
+              maxB !== undefined &&
+              parseFloat(minB) <= parseFloat(x) &&
+              parseFloat(maxB) >= parseFloat(x)
+            ) {
+              l.push(index);
+            } else if (
+              minB !== undefined &&
+              maxB === undefined &&
+              parseFloat(minB) <= parseFloat(x)
+            ) {
+              l.push(index);
+            } else if (
+              maxB !== undefined &&
+              minB === undefined &&
+              parseFloat(maxB) >= parseFloat(x)
+            ) {
+              l.push(index);
+            } else if (values !== undefined && values.includes(x)) {
+              l.push(index);
+            }
+            return 0;
+          });
+          students = students.concat(l);
+          return 0;
+        });
+    }
+
     let numberStudentsGroup = this.state.numberRows / this.state.numberOfGroups;
     let subsetNoCompleted = false;
     if (
@@ -212,6 +236,9 @@ class Subset extends Component {
       subsets: newSubsets,
       groupsAssigned: groupsAssigned,
       subsetNoCompleted: subsetNoCompleted,
+      numberOfSubsetGroupsSelected: false,
+      importantAttributeSelected: true,
+      invalidNumberOfGroups: false,
     });
   };
 
@@ -236,7 +263,7 @@ class Subset extends Component {
   handleSelectAttributes = e => {
     let attr = {};
     e.map(x => (attr[x] = 1));
-    this.setState({ subsetAttributes: attr });
+    this.setState({ subsetAttributes: attr, importantAttributeSelected: true });
   };
 
   handleImportanceAttribute = e => {
@@ -254,15 +281,31 @@ class Subset extends Component {
       return;
     } else {
       let subs = this.state.subsets;
+      let isSubsetComplete = false;
       subs[this.state.subsetToBeAdded]["students"] = subs[
         this.state.subsetToBeAdded
       ]["students"].concat(this.state.selected);
+      let numberStudentsGroup =
+        this.state.numberRows / this.state.numberOfGroups;
+      if (
+        subs[this.state.subsetToBeAdded]["students"].length >=
+          (numberStudentsGroup - 2) *
+            [this.state.subsetToBeAdded]["numberOfGroups"] &&
+        subs[this.state.subsetToBeAdded]["students"].length <=
+          (numberStudentsGroup + 2) *
+            [this.state.subsetToBeAdded]["numberOfGroups"]
+      )
+        isSubsetComplete = true;
       subs[0] = subs[0].filter(x => !this.state.selected.includes(x));
       let newSelected = this.state.selected;
       newSelected = newSelected.filter(
         x => !subs[this.state.subsetToBeAdded]["students"].includes(x)
       );
-      this.setState({ subsets: subs, selected: newSelected });
+      this.setState({
+        subsets: subs,
+        selected: newSelected,
+        subsetNoCompleted: !isSubsetComplete,
+      });
     }
   };
 
@@ -278,7 +321,22 @@ class Subset extends Component {
       newSubsets[this.state.subsetOnScreen]["students"] = newSubsets[
         this.state.subsetOnScreen
       ]["students"].filter(x => !this.state.selected.includes(x));
-      this.setState({ selected: [], subsets: newSubsets });
+      let isSubsetComplete = false;
+      let numberStudentsGroup = this.state.rows / this.state.numberOfGroups;
+      if (
+        newSubsets[this.state.subsetToBeAdded]["students"].length >=
+          (numberStudentsGroup - 2) *
+            [this.state.subsetToBeAdded]["numberOfGroups"] &&
+        newSubsets[this.state.subsetToBeAdded]["students"].length <=
+          (numberStudentsGroup + 2) *
+            [this.state.subsetToBeAdded]["numberOfGroups"]
+      )
+        isSubsetComplete = true;
+      this.setState({
+        selected: [],
+        subsets: newSubsets,
+        subsetNoCompleted: !isSubsetComplete,
+      });
     }
   };
 
@@ -349,7 +407,11 @@ class Subset extends Component {
             </Toast>
           </Col>
           <Col md={2}>
-            <Button onClick={this.handleCreateSubset} variant="success">
+            <Button
+              disabled={this.state.groupsAssigned === this.state.numberOfGroups}
+              onClick={this.handleCreateSubset}
+              variant="success"
+            >
               Crear subconjunto
             </Button>
           </Col>
@@ -459,6 +521,7 @@ class Subset extends Component {
                       createSubset: false,
                       subsetAttributes: {},
                       numberOfGroupsSubset: 1,
+                      restrictions: {},
                     })
                   }
                 >
@@ -478,6 +541,12 @@ class Subset extends Component {
                                 subconjunto
                               </h6>
                             </Form.Label>
+                            {this.state.invalidNumberOfGroups && (
+                              <Form.Label style={{ color: "red" }}>
+                                Debe seleccionar una cantidad de grupos para
+                                crear el subconjunto.
+                              </Form.Label>
+                            )}
                             <Form.Control
                               onChange={this.handleChangeNumberGroupsSubset}
                               min={1}
@@ -500,6 +569,12 @@ class Subset extends Component {
                                     subconjunto
                                   </h6>
                                 </Form.Label>
+                                {!this.state.importantAttributeSelected && (
+                                  <Form.Label style={{ color: "red" }}>
+                                    Debe seleccionar al menos un atributo
+                                    relevante para este subconjunto.
+                                  </Form.Label>
+                                )}
                                 {this.state.createSubset && (
                                   <DropdownMultiselect
                                     style={{ width: "40%" }}

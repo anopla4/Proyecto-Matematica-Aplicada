@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import { Table, Row, Col, Form, Toast, Button } from "react-bootstrap";
-// import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
+import { Table, Row, Col, Form, Toast, Button, Spinner } from "react-bootstrap";
 import { withRouter } from "react-router-dom";
 import { transformData, formatString } from "../../utils";
 import "./Data.css";
@@ -12,6 +11,7 @@ class Data extends Component {
     attributesType: {},
     attrTypeIncomplete: false,
     numberOfAttributesToBig: false,
+    spinner: false,
   };
 
   handleSelectAttributes = e => {
@@ -32,7 +32,9 @@ class Data extends Component {
     e.preventDefault();
     var formdata = new FormData();
     formdata.append("file", e.target.files[0], e.target.files[0].name);
-    fetch("https://ourapigroups.herokuapp.com/file", {
+    // "https://ourapigroups.herokuapp.com/file";
+    this.setState({ spinner: true });
+    fetch("http://127.0.0.1:8000/file", {
       method: "POST",
       body: formdata,
     })
@@ -55,6 +57,7 @@ class Data extends Component {
           data: d,
           showedAttributes: showedAttr,
           attributesType: attrType,
+          spinner: false,
         });
       })
       .catch(function (error) {
@@ -114,6 +117,13 @@ class Data extends Component {
             <Form.Control onChange={this.handleFileUpload} type="file" />
           </Form.Group>
         </Row>
+        {this.state.spinner && (
+          <Row>
+            <Col className="d-flex align-items-center justify-content-center">
+              <Spinner variant="primary" animation="border" />
+            </Col>
+          </Row>
+        )}
         <Row>
           <Col className="tabCol">
             {this.state.data !== undefined && (
@@ -145,7 +155,7 @@ class Data extends Component {
             {Array.from({
               length: Object.keys(this.state.data).length / 4,
             }).map((_, i) => (
-              <Row>
+              <Row className="mt-2">
                 {Array.from({
                   length: 4,
                 }).map((_, j) => (
@@ -156,6 +166,7 @@ class Data extends Component {
                         onChange={this.handleTypeAttributes}
                         id={Object.keys(this.state.data)[4 * i + j]}
                         aria-label="attribute type"
+                        defaultValue="1"
                       >
                         <option></option>
                         <option value="1">Nominal</option>

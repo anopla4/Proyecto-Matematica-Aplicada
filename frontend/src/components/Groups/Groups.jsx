@@ -37,7 +37,8 @@ class Groups extends Component {
   componentDidMount() {
     let subsets = this.props.location.state.subsets;
     let method = this.props.location.state.method;
-    fetch("https://ourapigroups.herokuapp.com/groups", {
+    // "https://ourapigroups.herokuapp.com/groups";
+    fetch("http://127.0.0.1:8000/groups", {
       method: "POST",
       body: JSON.stringify({
         subset: subsets,
