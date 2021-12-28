@@ -1,31 +1,18 @@
 import React, { Component } from "react";
 import { Table, Row, Col, Form, Toast, Button, Spinner } from "react-bootstrap";
 import { withRouter } from "react-router-dom";
-import { transformData, formatString } from "../../utils";
+import { transformData } from "../../utils";
+import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
 import "./Data.css";
 
 class Data extends Component {
   state = {
     data: undefined,
-    showedAttributes: [],
     attributesType: {},
     attrTypeIncomplete: false,
     numberOfAttributesToBig: false,
     spinner: false,
-  };
-
-  handleSelectAttributes = e => {
-    if (e.length === 0) {
-      let temp = [this.state.showedAttributes[0]];
-      this.setState({
-        showedAttributes: temp,
-        numberOfAttributesToBig: false,
-      });
-    } else if (e.length > 5) {
-      this.setState({ numberOfAttributesToBig: true });
-    } else {
-      this.setState({ showedAttributes: e, numberOfAttributesToBig: false });
-    }
+    attributesSelected: [],
   };
 
   handleFileUpload = e => {
@@ -48,14 +35,15 @@ class Data extends Component {
         response = JSON.parse(response);
         let attr = Object.keys(response);
         let attrType = {};
-        attr.map(x => (attrType[x] = "Nominal"));
-        let showedAttr =
-          attr.length < 5 ? attr.splice(0, attr.length - 1) : attr.splice(0, 5);
+        attr.map(x =>
+          typeof response[x][0] === "string"
+            ? (attrType[x] = "Nominal")
+            : (attrType[x] = "Numérico")
+        );
         let d = {};
         Object.keys(response).map(x => (d[x] = Object.values(response[x])));
         this.setState({
           data: d,
-          showedAttributes: showedAttr,
           attributesType: attrType,
           spinner: false,
         });
@@ -93,6 +81,10 @@ class Data extends Component {
     let newAttrType = this.state.attributesType;
     newAttrType[attr] = selectedType;
     this.setState({ attributesType: newAttrType });
+  };
+
+  handleAttributesSelectionType = e => {
+    this.setState({ attributesSelected: e });
   };
 
   handleCloseToast = () => {
@@ -134,10 +126,7 @@ class Data extends Component {
                   ))}
                 </thead>
                 <tbody>
-                  {transformData(
-                    this.state.data,
-                    this.state.showedAttributes
-                  ).map(x => (
+                  {transformData(this.state.data).map(x => (
                     <tr>
                       {x.map(y => (
                         <td>{y}</td>
@@ -151,22 +140,50 @@ class Data extends Component {
         </Row>
         {this.state.data !== undefined && (
           <Row className="mt-5">
-            <h4>Seleccione el tipo de atributo en cada caso</h4>
+            <Row>
+              <Col>
+                <h4>Seleccione el tipo de atributo en cada caso</h4>
+                <small>
+                  Los atributos que tengan valores numéricos serán tratados como
+                  variables cuantitativas y los que sean cadenas de caracteres,
+                  como variables nominales
+                </small>
+              </Col>
+              <Col>
+                <DropdownMultiselect
+                  placeholder="Seleccione los atributos para modificar su tipo..."
+                  handleOnChange={this.handleAttributesSelectionType}
+                  options={Object.keys(this.state.data)}
+                  name="attributes"
+                />
+              </Col>
+            </Row>
             {Array.from({
-              length: Object.keys(this.state.data).length / 4,
+              length: Math.ceil(this.state.attributesSelected.length / 4),
             }).map((_, i) => (
               <Row className="mt-2">
                 {Array.from({
-                  length: 4,
+                  length: Math.min(
+                    this.state.attributesSelected.length - 4 * i,
+                    4
+                  ),
                 }).map((_, j) => (
-                  <Col>
-                    <p>{Object.keys(this.state.data)[i * 4 + j]}: </p>
+                  <Col md={3}>
                     <Form>
+                      <Form.Label>
+                        {this.state.attributesSelected[i * 4 + j]}:{" "}
+                      </Form.Label>
                       <Form.Select
-                        onChange={this.handleTypeAttributes}
-                        id={Object.keys(this.state.data)[4 * i + j]}
+                        onChange={this.props.handleTypeAttributes}
+                        id={this.state.attributesSelected[i * 4 + j]}
                         aria-label="attribute type"
-                        defaultValue="1"
+                        defaultValue={
+                          this.state.attributesType[
+                            this.state.attributesSelected[i * 4 + j]
+                          ] === "Nominal"
+                            ? "1"
+                            : "2"
+                        }
                       >
                         <option></option>
                         <option value="1">Nominal</option>
@@ -177,7 +194,7 @@ class Data extends Component {
                 ))}
               </Row>
             ))}
-            {Object.keys(this.state.data).length % 4 !== 0 && (
+            {/* {Object.keys(this.state.data).length % 4 !== 0 && (
               <Row>
                 {Array.from({
                   length: Object.keys(this.state.data).length % 4,
@@ -209,7 +226,7 @@ class Data extends Component {
                   </Col>
                 ))}
               </Row>
-            )}
+            )} */}
           </Row>
         )}
         <Row>
