@@ -1,7 +1,7 @@
 .styles_overlay-wrapper__O0Zm8 .styles_overlay-content__1qZR_ {
   padding: 2em;
   background-color: white;
-  max-width: 100%;
+  max-width: 100vh;
   width: 70%;
   position: relative;
   margin: auto;
@@ -58,4 +58,9 @@
     2px 2px 3px 0 rgb(230, 61, 61), -2px -2px 3px 0 rgb(230, 61, 61);
   animation-name: wrong;
   animation-duration: 4s;
+}
+
+.attrImportance {
+  height: 20vh;
+  overflow-y: auto;
 }

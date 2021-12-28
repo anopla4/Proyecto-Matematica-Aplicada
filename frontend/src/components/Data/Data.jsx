@@ -174,7 +174,7 @@ class Data extends Component {
                         {this.state.attributesSelected[i * 4 + j]}:{" "}
                       </Form.Label>
                       <Form.Select
-                        onChange={this.props.handleTypeAttributes}
+                        onChange={this.handleTypeAttributes}
                         id={this.state.attributesSelected[i * 4 + j]}
                         aria-label="attribute type"
                         defaultValue={

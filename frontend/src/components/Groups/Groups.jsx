@@ -1,5 +1,14 @@
 import React, { Component } from "react";
-import { Tab, Col, Row, Nav, Table, Button, Container } from "react-bootstrap";
+import {
+  Tab,
+  Col,
+  Row,
+  Nav,
+  Table,
+  Button,
+  Container,
+  Spinner,
+} from "react-bootstrap";
 import Navigation from "../NavBar/NavBar";
 import { withRouter } from "react-router-dom";
 import Statistics from "../Statistics/Statistics";
@@ -22,6 +31,7 @@ class Groups extends Component {
       "light",
     ],
     selectedAttributes: [],
+    spinner: false,
   };
 
   componentWillMount() {
@@ -38,6 +48,7 @@ class Groups extends Component {
     let subsets = this.props.location.state.subsets;
     let method = this.props.location.state.method;
     // "https://ourapigroups.herokuapp.com/groups";
+    this.setState({ spinner: true });
     fetch("http://127.0.0.1:8000/groups", {
       method: "POST",
       body: JSON.stringify({
@@ -56,6 +67,7 @@ class Groups extends Component {
       .then(response => {
         this.setState({
           groups: JSON.parse(response),
+          spinner: false,
         });
       })
       .catch(function (error) {
@@ -82,18 +94,25 @@ class Groups extends Component {
   render() {
     return (
       <Container style={{ margin: "3%" }}>
+        <Row className="mb-3">
+          <Col>
+            <Navigation
+              items={this.state.groups}
+              attributesType={this.state.attributesType}
+              data={this.state.data}
+              onClick={this.handleSelectSubset}
+            />
+          </Col>
+        </Row>
+        {this.state.spinner && (
+          <Row>
+            <Col className="d-flex align-items-center justify-content-center">
+              <Spinner variant="primary" animation="border" />
+            </Col>
+          </Row>
+        )}
         {this.state.subsetSelected === undefined && (
           <Tab.Container id="list-group-tabs-example" defaultActiveKey={1}>
-            <Row className="mb-3">
-              <Col>
-                <Navigation
-                  items={this.state.groups}
-                  attributesType={this.state.attributesType}
-                  data={this.state.data}
-                  onClick={this.handleSelectSubset}
-                />
-              </Col>
-            </Row>
             <Row>
               <Col md={3}>
                 <Nav className="flex-column">
@@ -176,7 +195,7 @@ class Groups extends Component {
                   groups={this.state.groups[this.state.subsetSelected]}
                 />
               </Col>
-              <Row>
+              <Row className="mt-3">
                 <Col className="d-flex align-items-end justify-content-end">
                   <Button variant="secondary" onClick={this.handleGoBack}>
                     Volver
