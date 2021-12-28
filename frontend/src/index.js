@@ -1,5 +1,4 @@
 import "bootstrap/dist/css/bootstrap.css";
-import "./components/Subset/Subset.css";
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";

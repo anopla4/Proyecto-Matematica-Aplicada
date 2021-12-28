@@ -22,6 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 async def root():
     html_content = """
@@ -46,16 +47,18 @@ async def root():
     """
     return HTMLResponse(content=html_content, status_code=200)
 
+
 def __clean_files():
     for f in os.listdir(file_location):
         os.remove(os.path.join(file_location, f))
+
 
 @app.post("/file")
 async def upload_file(file: UploadFile = File(...)):
     global file_location
     if file_location != "files/":
         file_location = "files/"
-        __clean_files()
+        # __clean_files()
     file_location += f"{file.filename}"
     with open(file_location, "wb+") as file_object:
         file_object.write(file.file.read())
@@ -64,11 +67,7 @@ async def upload_file(file: UploadFile = File(...)):
 
 
 @app.post("/groups")
-def group_processing(
-    subset: dict,
-    types: dict,
-    method = "kmean"
-):
+def group_processing(subset: dict, types: dict, method="kmean"):
     """
     subset -> dicc de la forma #sub(int)-> Obj donde:
         Obj = {
@@ -85,7 +84,7 @@ def group_processing(
     groups = main_action(
         file_path=file_location,
         subset=subset,
-        types= types,
-        group_performing= group_performing
+        types=types,
+        group_performing=group_performing,
     )
     return dumps(groups)

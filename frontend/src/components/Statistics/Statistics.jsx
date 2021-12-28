@@ -89,7 +89,7 @@ class Statistics extends Component {
 
   render() {
     return (
-      <Row style={{ margin: "3%" }}>
+      <Row>
         <Row>
           <Col className="d-flex align-items-center justify-content-center">
             <h3>Estadísticas</h3>
