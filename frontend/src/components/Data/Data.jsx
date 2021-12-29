@@ -20,7 +20,7 @@ class Data extends Component {
     var formdata = new FormData();
     formdata.append("file", e.target.files[0], e.target.files[0].name);
     this.setState({ spinner: true });
-    fetch("https://ourapigroups.herokuapp.com/file", {
+    fetch("https://apikgrupos.herokuapp.com/file", {
       method: "POST",
       body: formdata,
     })
