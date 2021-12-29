@@ -47,6 +47,7 @@ class Groups extends Component {
   componentDidMount() {
     let subsets = this.props.location.state.subsets;
     let method = this.props.location.state.method;
+    this.setState({ spinner: true });
     fetch("https://apikgrupos.herokuapp.com/groups", {
       method: "POST",
       body: JSON.stringify({
