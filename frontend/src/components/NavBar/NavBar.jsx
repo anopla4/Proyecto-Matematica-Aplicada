@@ -1,14 +1,28 @@
 import React, { Component } from "react";
 import "./NavBar.css";
 import { withRouter } from "react-router-dom";
-import { Navbar, Nav, Offcanvas, Container, Button } from "react-bootstrap";
+import {
+  Navbar,
+  Nav,
+  Offcanvas,
+  Container,
+  Button,
+  OverlayTrigger,
+  Tooltip,
+} from "react-bootstrap";
 
 class Navigation extends Component {
   render() {
     return (
       <Navbar expand={false}>
         <Container style={{ paddingLeft: "100%" }} fluid>
-          <Navbar.Toggle aria-controls="offcanvasNavbar" />
+          <OverlayTrigger
+            placement="top"
+            overlay={<Tooltip id={"advancedOptions"}>Estadísticas</Tooltip>}
+          >
+            <Navbar.Toggle aria-controls="offcanvasNavbar" />
+          </OverlayTrigger>
+
           <Navbar.Offcanvas
             scroll={true}
             backdrop={true}

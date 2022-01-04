@@ -2,17 +2,19 @@ import React, { Component } from "react";
 import { Bar, Scatter } from "react-chartjs-2";
 import { Row, Col, Container, Form } from "react-bootstrap";
 import { removeRepeated } from "../../utils";
+import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
 
 class Statistics extends Component {
   state = {
-    type: "",
-    attribute: "",
+    attributes: [],
   };
 
+  componentDidMount() {
+    this.setState({ attributes: [this.props.subset["attributes"][0][0]] });
+  }
+
   handleChangeAttribute = e => {
-    let attr = e.target.value;
-    let type = attr === "" ? "" : this.props.attributesType[attr];
-    this.setState({ attribute: attr, type: type });
+    this.setState({ attributes: e });
   };
 
   generateColor = () => {
@@ -23,9 +25,9 @@ class Statistics extends Component {
     return `rgba(${r}, ${g}, ${b}, ${a})`;
   };
 
-  transformDataBar = () => {
+  transformDataBar = attr => {
     let data = {
-      labels: removeRepeated(this.props.data[this.state.attribute]),
+      labels: removeRepeated(this.props.data[attr]),
       datasets: [],
     };
     let options = {
@@ -38,7 +40,7 @@ class Statistics extends Component {
     Object.keys(this.props.groups).map(x => {
       let attrCounts = {};
       data.labels.map(y => (attrCounts[y] = 0));
-      this.props.data[this.state.attribute]
+      this.props.data[attr]
         .filter((_, i) => this.props.groups[x].includes(i))
         .map(z => (attrCounts[z] += 1));
       data.datasets.push({
@@ -54,16 +56,14 @@ class Statistics extends Component {
     return [data, options];
   };
 
-  transformDataScatter = () => {
+  transformDataScatter = attr => {
     let data = {
       datasets: [],
     };
     Object.keys(this.props.groups).map(g => {
       let students = this.props.groups[g];
       let d = [];
-      students.map(s =>
-        d.push({ x: this.props.data[this.state.attribute][s], y: g })
-      );
+      students.map(s => d.push({ x: this.props.data[attr][s], y: g }));
 
       data.datasets.push({
         label: `Grupo ${parseInt(g) + 1}`,
@@ -97,38 +97,47 @@ class Statistics extends Component {
         </Row>
         <Row className="mt-5">
           <Col>
-            <Container style={{ width: "100%" }}>
-              {this.state.type === "Nominal" && (
-                <Bar
-                  data={this.transformDataBar()[0]}
-                  options={this.transformDataBar()[1]}
-                />
-              )}
-            </Container>
-
-            <Container style={{ width: "100%" }}>
-              {this.state.type === "Numérico" && (
-                <Scatter
-                  data={this.transformDataScatter()[0]}
-                  options={this.transformDataScatter()[1]}
-                />
-              )}
-            </Container>
+            {this.state.attributes.map(x => (
+              <div className="mt-3">
+                <Row>
+                  <Col className="d-flex align-items-center justify-content-center">
+                    <h4>{x}</h4>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    {this.props.attributesType[x] === "Nominal" && (
+                      <Container style={{ width: "100%" }}>
+                        <Bar
+                          data={this.transformDataBar(x)[0]}
+                          options={this.transformDataBar(x)[1]}
+                        />
+                      </Container>
+                    )}
+                    {this.props.attributesType[x] === "Numérico" && (
+                      <Container style={{ width: "100%" }}>
+                        <Scatter
+                          data={this.transformDataScatter(x)[0]}
+                          options={this.transformDataScatter(x)[1]}
+                        />
+                      </Container>
+                    )}
+                  </Col>
+                </Row>
+              </div>
+            ))}
           </Col>
           <Col md={3}>
             <Form>
               <Form.Label>
-                Seleccione el atributo del que quiere ver las estadísticas
+                Seleccione los atributosde los que quiere ver las estadísticas
               </Form.Label>
-              <Form.Select
-                onChange={this.handleChangeAttribute}
-                aria-label="Default select example"
-              >
-                <option></option>
-                {Object.keys(this.props.data).map(x => (
-                  <option value={x}>{x}</option>
-                ))}
-              </Form.Select>
+              <DropdownMultiselect
+                placeholder="Seleccione los atributos relevantes..."
+                handleOnChange={this.handleChangeAttribute}
+                options={this.props.subset["attributes"].map(x => x[0])}
+                name="attributes"
+              />
             </Form>
           </Col>
         </Row>

@@ -21,6 +21,7 @@ class Groups extends Component {
     data: undefined,
     attributesType: undefined,
     subsetSelected: undefined,
+    subsets: {},
     groups: {},
     subsets_colors: [
       "primary",
@@ -37,21 +38,22 @@ class Groups extends Component {
   componentWillMount() {
     let d = this.props.location.state.data;
     let attributesType = this.props.location.state.attributesType;
-
+    let subsets = this.props.location.state.subsets;
     this.setState({
       data: d,
       attributesType: attributesType,
+      subsets: subsets,
+      // selectedAttributes: [Object.keys(attributesType)[0]],
     });
   }
 
   componentDidMount() {
-    let subsets = this.props.location.state.subsets;
     let method = this.props.location.state.method;
     this.setState({ spinner: true });
     fetch("https://apikgrupos.herokuapp.com/groups", {
       method: "POST",
       body: JSON.stringify({
-        subset: subsets,
+        subset: this.state.subsets,
         types: this.state.attributesType,
         method: method,
       }),
@@ -64,8 +66,9 @@ class Groups extends Component {
         return response.json();
       })
       .then(response => {
+        let g = JSON.parse(response);
         this.setState({
-          groups: JSON.parse(response),
+          groups: g,
           spinner: false,
         });
       })
@@ -142,19 +145,20 @@ class Groups extends Component {
                     Object.keys(this.state.groups[t]).map(x => (
                       <Tab.Pane eventKey={x}>
                         <Table bordered striped hover>
+                          ana
                           <thead>
-                            {this.state.selectedAttributes.map(x => (
-                              <th>{x}</th>
+                            {this.state.selectedAttributes.map(z => (
+                              <th>{z}</th>
                             ))}
                           </thead>
                           <tbody>
                             {this.state.groups[t][x].map(y => (
                               <tr>
-                                {this.state.selectedAttributes.map(x => (
+                                {this.state.selectedAttributes.map(w => (
                                   <td>
-                                    {typeof this.state.data[x][y] === "string"
-                                      ? formatString(this.state.data[x][y])
-                                      : this.state.data[x][y]}
+                                    {typeof this.state.data[w][y] === "string"
+                                      ? formatString(this.state.data[w][y])
+                                      : this.state.data[w][y]}
                                   </td>
                                 ))}
                               </tr>
@@ -169,7 +173,6 @@ class Groups extends Component {
               <Col md={3}>
                 <DropdownMultiselect
                   className="selectionBox"
-                  style={{ width: "40%" }}
                   placeholder="Seleccione los atributos relevantes..."
                   handleOnChange={this.handleSelectAttributes}
                   options={Object.keys(this.state.data)}
@@ -191,6 +194,7 @@ class Groups extends Component {
                 <Statistics
                   data={this.state.data}
                   attributesType={this.state.attributesType}
+                  subset={this.state.subsets[this.state.subsetSelected]}
                   groups={this.state.groups[this.state.subsetSelected]}
                 />
               </Col>
