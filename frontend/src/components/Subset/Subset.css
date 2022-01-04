@@ -1,7 +1,7 @@
 .styles_overlay-wrapper__O0Zm8 .styles_overlay-content__1qZR_ {
   padding: 2em;
   background-color: white;
-  max-width: 100vh;
+  max-width: 100vw;
   width: 70%;
   position: relative;
   margin: auto;
@@ -9,6 +9,22 @@
   border-radius: 5%;
   border-color: red;
   border-width: 10vh;
+}
+
+.styles_overlay-wrapper__O0Zm8
+  .styles_overlay-content__1qZR_
+  .styles_overlay-close__3e1ke {
+  top: 0;
+  right: 0;
+  position: absolute;
+  cursor: pointer;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1%;
+  margin-right: 1%;
 }
 
 .dropdown-menu {
@@ -63,4 +79,8 @@
 .attrImportance {
   height: 20vh;
   overflow-y: auto;
+}
+
+h6 {
+  font-weight: bold;
 }
