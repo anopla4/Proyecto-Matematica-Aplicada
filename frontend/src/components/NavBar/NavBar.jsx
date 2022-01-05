@@ -29,17 +29,21 @@ class Navigation extends Component {
             id="offcanvasNavbar"
             aria-labelledby="offcanvasNavbarLabel"
             placement="end"
+            className="offcanvas"
           >
             <Offcanvas.Header closeButton>
-              <Offcanvas.Title id="offcanvasNavbarLabel">
+              <Offcanvas.Title
+                style={{ color: "white" }}
+                id="offcanvasNavbarLabel"
+              >
                 Elija el subconjunto para consultar sus estadísticas
               </Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
-              <Nav className="justify-content-end flex-grow-1 pe-3">
+              <Nav className="justify-content-end flex-grow-1 pe-3 mt-2">
                 {Object.keys(this.props.items).map(x => (
                   <Button
-                    variant="light"
+                    variant="secondary"
                     id={x}
                     onClick={() => this.props.onClick(x)}
                   >

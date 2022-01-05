@@ -9,3 +9,16 @@ ul li.active {
   font-size: large;
   font-weight: bold;
 }
+
+.offcanvas-header .btn-close {
+  padding: 0.5rem 0.5rem;
+  margin-top: -0.5rem;
+  margin-right: -0.5rem;
+  margin-bottom: -0.5rem;
+  background-color: white;
+}
+
+.offcanvas {
+  --bs-bg-opacity: 1;
+  background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity)) !important;
+}
