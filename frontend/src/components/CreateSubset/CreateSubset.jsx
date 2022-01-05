@@ -31,12 +31,17 @@ class CreateSubset extends Component {
             <Form>
               <Row>
                 <Col>
-                  <Form.Label>
-                    <h6>Elija la cantidad de grupos para este subconjunto</h6>
+                  <Form.Label className="mt-3">
+                    <h6>
+                      Elija los atributos importantes para este subconjunto
+                    </h6>
+                    {this.props.importantAttributeSelected && (
+                      <small>Debe seleccionar al menos un atributo.</small>
+                    )}
                   </Form.Label>
-                  {this.props.invalidNumberOfGroups && (
+                  {!this.props.importantAttributeSelected && (
                     <Form.Label style={{ color: "red" }}>
-                      Debe seleccionar una cantidad de grupos para crear el
+                      Debe seleccionar al menos un atributo relevante para este
                       subconjunto.
                     </Form.Label>
                   )}
@@ -57,6 +62,9 @@ class CreateSubset extends Component {
                         <h6>
                           Elija los atributos importantes para este subconjunto
                         </h6>
+                        {this.props.importantAttributeSelected && (
+                          <small>Debe seleccionar al menos un atributo.</small>
+                        )}
                       </Form.Label>
                       {!this.props.importantAttributeSelected && (
                         <Form.Label style={{ color: "red" }}>
@@ -98,6 +106,10 @@ class CreateSubset extends Component {
                     <Col>
                       <Form.Label className="mt-3">
                         <h6>Elija las restricciones para este subconjunto</h6>
+                        <small>
+                          Si no selecciona restricciones se añadirán todos los
+                          estudiantes que quedan por asignar.
+                        </small>
                       </Form.Label>
 
                       <DropdownMultiselect

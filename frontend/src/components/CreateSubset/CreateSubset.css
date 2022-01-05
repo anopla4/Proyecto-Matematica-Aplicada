@@ -1,3 +1,18 @@
+/* .styles_overlay-wrapper__O0Zm8
+  .styles_overlay-content__1qZR_
+  .styles_overlay-close__3e1ke {
+  top: 0;
+  right: 0;
+  position: absolute;
+  cursor: pointer;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1%;
+  margin-right: 1%;
+} */
 .dropdown-menu {
   position: absolute;
   z-index: 1000;
