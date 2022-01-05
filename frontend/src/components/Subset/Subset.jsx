@@ -17,7 +17,6 @@ import filterFactory, {
   textFilter,
 } from "react-bootstrap-table2-filter";
 import { withRouter } from "react-router-dom";
-import Overlay from "react-overlay-component";
 import CreateSubset from "../CreateSubset/CreateSubset";
 import AdvancedOptions from "../AdvancedOptions/AdvancedOptions";
 import { transformDataBootstrapTable, removeRepeated } from "../../utils";
@@ -617,44 +616,17 @@ class Subset extends Component {
                 </Button>
               </OverlayTrigger>
             </ButtonGroup>
-            <Overlay
-              configs={configs}
-              isOpen={this.state.advancedOptions}
-              closeOverlay={() =>
+            <AdvancedOptions
+              handleCloseOverlayAdvancedOptions={() =>
                 this.setState({
                   advancedOptions: false,
                 })
               }
-            >
-              <Row>
-                <Col>
-                  <h4>
-                    Elija el método que quiere utilizar para la conformación de
-                    los grupos
-                  </h4>
-                </Col>
-              </Row>
-              <Row>
-                <Form>
-                  <Form.Check
-                    onClick={() => this.setState({ method: "kmean" })}
-                    checked={this.state.method === "kmean"}
-                    type="radio"
-                    id="kmean"
-                    label="K-means"
-                    name="K-means"
-                  />
-                  <Form.Check
-                    onClick={() => this.setState({ method: "methauristic" })}
-                    checked={this.state.method === "methauristic"}
-                    type="radio"
-                    id="metaheuristic"
-                    label="Metaheurística"
-                    name="Metaheurística"
-                  />
-                </Form>
-              </Row>
-            </Overlay>
+              show={this.state.advancedOptions}
+              configs={configs}
+              handleChangeMethod={this.handleChangeMethod}
+              method={this.state.method}
+            />
           </Col>
         </Row>
       </Row>
