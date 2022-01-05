@@ -154,10 +154,10 @@ class Subset extends Component {
   };
 
   handleAcceptSubset = () => {
-    // if (!this.state.numberOfSubsetGroupsSelected) {
-    //   this.setState({ invalidNumberOfGroups: true });
-    //   return;
-    // }
+    if (!this.state.numberOfSubsetGroupsSelected) {
+      this.setState({ invalidNumberOfGroups: true });
+      return;
+    }
     if (Object.keys(this.state.subsetAttributes).length === 0) {
       this.setState({ importantAttributeSelected: false });
       return;
@@ -571,6 +571,7 @@ class Subset extends Component {
                       subsetAttributes: {},
                       numberOfGroupsSubset: 1,
                       restrictions: {},
+                      invalidNumberOfGroups: false,
                     })
                   }
                   invalidNumberOfGroups={this.state.invalidNumberOfGroups}

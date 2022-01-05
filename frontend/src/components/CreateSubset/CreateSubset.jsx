@@ -31,27 +31,38 @@ class CreateSubset extends Component {
             <Form>
               <Row>
                 <Col>
-                  <Form.Label className="mt-3">
-                    <h6>
-                      Elija los atributos importantes para este subconjunto
-                    </h6>
-                    {this.props.importantAttributeSelected && (
-                      <small>Debe seleccionar al menos un atributo.</small>
-                    )}
-                  </Form.Label>
-                  {!this.props.importantAttributeSelected && (
-                    <Form.Label style={{ color: "red" }}>
-                      Debe seleccionar al menos un atributo relevante para este
-                      subconjunto.
-                    </Form.Label>
-                  )}
-                  <Form.Control
-                    onChange={this.props.handleChangeNumberGroupsSubset}
-                    min={1}
-                    max={this.props.numberOfGroups - this.props.groupsAssigned}
-                    type="number"
-                    style={{ width: "20%" }}
-                  />
+                  <Row>
+                    <Col>
+                      <Form.Label>
+                        <h6>
+                          Elija la cantidad de grupos para este subconjunto
+                        </h6>
+                      </Form.Label>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      {this.props.invalidNumberOfGroups && (
+                        <Form.Label style={{ color: "red" }}>
+                          Debe seleccionar una cantidad de grupos para crear el
+                          subconjunto.
+                        </Form.Label>
+                      )}
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col md={2}>
+                      <Form.Control
+                        onChange={this.props.handleChangeNumberGroupsSubset}
+                        min={1}
+                        max={
+                          this.props.numberOfGroups - this.props.groupsAssigned
+                        }
+                        type="number"
+                      />
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
               <Row>
