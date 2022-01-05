@@ -43,7 +43,7 @@ class Groups extends Component {
       data: d,
       attributesType: attributesType,
       subsets: subsets,
-      // selectedAttributes: [Object.keys(attributesType)[0]],
+      selectedAttributes: [Object.keys(attributesType)[0]],
     });
   }
 
@@ -145,7 +145,6 @@ class Groups extends Component {
                     Object.keys(this.state.groups[t]).map(x => (
                       <Tab.Pane eventKey={x}>
                         <Table bordered striped hover>
-                          ana
                           <thead>
                             {this.state.selectedAttributes.map(z => (
                               <th>{z}</th>
@@ -171,13 +170,23 @@ class Groups extends Component {
                 </Tab.Content>
               </Col>
               <Col md={3}>
-                <DropdownMultiselect
-                  className="selectionBox"
-                  placeholder="Seleccione los atributos relevantes..."
-                  handleOnChange={this.handleSelectAttributes}
-                  options={Object.keys(this.state.data)}
-                  name="attributes"
-                />
+                <Row>
+                  <Col>
+                    <h6>Seleccione los atributos que quiere visualizar</h6>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <DropdownMultiselect
+                      className="selectionBox"
+                      selected={this.state.selectedAttributes}
+                      placeholder="Seleccione los atributos a visualizar..."
+                      handleOnChange={this.handleSelectAttributes}
+                      options={Object.keys(this.state.data)}
+                      name="attributes"
+                    />
+                  </Col>
+                </Row>
               </Col>
             </Row>
             <Row className="mt-3 mb-5">
@@ -189,6 +198,11 @@ class Groups extends Component {
         )}
         {this.state.subsetSelected !== undefined && (
           <Container>
+            <Row>
+              <Col className="d-flex align-items-center justify-content-center">
+                <h3>Estadísticas</h3>
+              </Col>
+            </Row>
             <Row>
               <Col>
                 <Statistics

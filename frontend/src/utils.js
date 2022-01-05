@@ -104,10 +104,15 @@ function removeRepeated(l) {
   });
 }
 
+function countElements(l, value, attr, data) {
+  return l.map(x => data[attr][x]).filter(y => y === value).length;
+}
+
 export {
   create_partition,
   transformDataBootstrapTable,
   transformData,
   formatString,
   removeRepeated,
+  countElements,
 };
