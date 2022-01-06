@@ -1,6 +1,14 @@
 import React, { Component } from "react";
 import { Bar, Scatter } from "react-chartjs-2";
-import { Row, Col, Container, Form, Table } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Container,
+  Form,
+  Table,
+  Button,
+  Modal,
+} from "react-bootstrap";
 import { removeRepeated, countElements } from "../../utils";
 import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
 import "./Statistics.css";
@@ -8,7 +16,8 @@ import "./Statistics.css";
 class Statistics extends Component {
   state = {
     attributes: [],
-    groupType: "group",
+    // groupType: "attribute",
+    infoGroup: false,
   };
 
   componentDidMount() {
@@ -94,12 +103,81 @@ class Statistics extends Component {
   handleGroupTable = e => {
     this.setState({ groupType: e.target.value });
   };
-
+  handleInfoGroups = () => {
+    this.setState({ infoGroup: true });
+  };
+  handleCloseInfoGroup = () => {
+    this.setState({ infoGroup: false });
+  };
   render() {
+    const attributesValues = {};
+    Object.keys(this.props.data).map(
+      x => (attributesValues[x] = removeRepeated(this.props.data[x]))
+    );
     return (
       <Row>
+        <Modal
+          style={{ maxHeight: "80vh", height: "80vh", overflowY: "scroll" }}
+          show={this.state.infoGroup}
+          onHide={this.handleCloseInfoGroup}
+          size="lg"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title id="contained-modal-title-vcenter-hcenter">
+              Estadísticas por grupos
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Table>
+              <thead>
+                <th>Atributos</th>
+                {Object.keys(this.props.groups).map(x => (
+                  <th>Grupo {parseInt(x) + 1}</th>
+                ))}
+              </thead>
+              <tbody>
+                {this.props.subset["attributes"].map(x => (
+                  <tr>
+                    <td>{x[0]}</td>
+                    {Object.keys(this.props.groups).map(y => (
+                      <td>
+                        {attributesValues[x[0]].map(z => (
+                          <Row
+                            style={{
+                              borderTopStyle: "solid",
+                              borderTopWidth: "0.2px",
+                              borderTopColor: " rgb(200, 195, 195)",
+                            }}
+                          >
+                            <Col>{z}</Col>
+                            <Col>
+                              {
+                                this.props.groups[y].filter(
+                                  w => this.props.data[x[0]][w] === z
+                                ).length
+                              }
+                            </Col>
+                          </Row>
+                        ))}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={this.handleCloseInfoGroup}>Cerrar</Button>
+          </Modal.Footer>
+        </Modal>
         <Row className="mb-3">
-          <Col></Col>
+          <Col>
+            <Button variant="primary" onClick={this.handleInfoGroups}>
+              Estadísticas por grupos
+            </Button>
+          </Col>
           <Col md={3} className="d-flex align-items-end justify-content-end">
             <Form>
               <Form.Label>
@@ -129,25 +207,10 @@ class Statistics extends Component {
                 <h4>Tablas</h4>
               </Col>
             </Row>
-            <Row>
-              <Form>
-                <Form.Label>Agrupar tablas por:</Form.Label>
-                <Form.Select
-                  onChange={this.handleGroupTable}
-                  aria-label="tables grouped by type"
-                  defaultValue="group"
-                >
-                  <option></option>
-                  <option value="group">Grupo</option>
-                  <option value="attribute">Atributo</option>
-                </Form.Select>
-              </Form>
-            </Row>
             {this.state.attributes.map(x => (
               <div className="mt-3">
                 <Row style={{ maxHeight: "80vh" }}>
                   <Col>
-                    git status
                     <h6>
                       {x} (Importancia:{" "}
                       {this.props.subset["attributes"].find(y => y[0] === x)[1]}

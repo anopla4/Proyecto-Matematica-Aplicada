@@ -212,7 +212,7 @@ class Groups extends Component {
                   groups={this.state.groups[this.state.subsetSelected]}
                 />
               </Col>
-              <Row className="mt-3">
+              <Row className="mt-3 mb-3">
                 <Col className="d-flex align-items-end justify-content-end">
                   <Button variant="secondary" onClick={this.handleGoBack}>
                     Volver

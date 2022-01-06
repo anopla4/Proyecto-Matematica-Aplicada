@@ -367,6 +367,7 @@ class Subset extends Component {
       subsets: newSubsets,
       subsetOnScreen: 0,
       groupsAssigned: groupsAssigned,
+      invalidNumberOfGroups: false,
     });
   };
 
