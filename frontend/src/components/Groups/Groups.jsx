@@ -179,7 +179,7 @@ class Groups extends Component {
   };
 
   handleChangeFileType = t => {
-    this.setState({ fileType: t });
+    this.setState({ fileType: t.target.value });
   };
 
   handleDownload = () => {
@@ -291,8 +291,8 @@ class Groups extends Component {
                     onChange={this.handleChangeFileType}
                     defaultValue="csv"
                   >
-                    <option>csv</option>
-                    <option>json</option>
+                    <option value="csv">csv</option>
+                    <option value="json">json</option>
                   </Form.Select>
                 </Form>
               </Col>
