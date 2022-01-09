@@ -130,7 +130,7 @@ class Groups extends Component {
         for (var item in groups[subset][group]) {
           var d = {};
           d["Subgrupo"] = parseInt(subset);
-          d["Grupo"] = parseInt(group) + 1;
+          d["Grupo Asignado#"] = parseInt(group) + 1;
           for (var att in data) {
             d[att] = data[att][groups[subset][group][item]];
           }
