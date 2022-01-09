@@ -8,6 +8,7 @@ import {
   Button,
   Container,
   Spinner,
+  Form,
 } from "react-bootstrap";
 import Navigation from "../NavBar/NavBar";
 import { withRouter } from "react-router-dom";
@@ -15,24 +16,24 @@ import Statistics from "../Statistics/Statistics";
 import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
 import { formatString } from "../../utils";
 import "./Groups.css";
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
 
 const downloadFile = ({ data, fileName, fileType }) => {
   // Create a blob with the data we want to download as a file
-  const blob = new Blob([data], { type: fileType })
+  const blob = new Blob([data], { type: fileType });
   // Create an anchor element and dispatch a click event on it
   // to trigger a download
-  const a = document.createElement('a')
-  a.download = fileName
-  a.href = window.URL.createObjectURL(blob)
-  const clickEvt = new MouseEvent('click', {
+  const a = document.createElement("a");
+  a.download = fileName;
+  a.href = window.URL.createObjectURL(blob);
+  const clickEvt = new MouseEvent("click", {
     view: window,
     bubbles: true,
     cancelable: true,
-  })
-  a.dispatchEvent(clickEvt)
-  a.remove()
-}
+  });
+  a.dispatchEvent(clickEvt);
+  a.remove();
+};
 
 class Groups extends Component {
   state = {
@@ -51,6 +52,7 @@ class Groups extends Component {
     ],
     selectedAttributes: [],
     spinner: false,
+    fileType: "csv",
   };
 
   componentWillMount() {
@@ -95,22 +97,18 @@ class Groups extends Component {
       });
   }
 
-  createGroupsJsonData = () =>{
+  createGroupsJsonData = () => {
     var g = {};
     let groups = this.state.groups;
     let data = this.state.data;
-    for(var subset in groups)
-    {
+    for (var subset in groups) {
       g[subset] = [];
-      for( var group in groups[subset])
-      {
-        var new_g = []
-        for(var item in groups[subset][group])
-        {
+      for (var group in groups[subset]) {
+        var new_g = [];
+        for (var item in groups[subset][group]) {
           var d = {};
           d["id"] = groups[subset][group][item];
-          for(var att in data)
-          {
+          for (var att in data) {
             d[att] = data[att][groups[subset][group][item]];
           }
           new_g.push(d);
@@ -127,17 +125,13 @@ class Groups extends Component {
     var csv = [];
     let groups = this.state.groups;
     let data = this.state.data;
-    for(var subset in groups)
-    {
-      for( var group in groups[subset])
-      {
-        for(var item in groups[subset][group])
-        {
+    for (var subset in groups) {
+      for (var group in groups[subset]) {
+        for (var item in groups[subset][group]) {
           var d = {};
           d["Subgrupo"] = parseInt(subset);
-          d["Grupo"] = parseInt(group)+1;
-          for(var att in data)
-          {
+          d["Grupo"] = parseInt(group) + 1;
+          for (var att in data) {
             d[att] = data[att][groups[subset][group][item]];
           }
           csv.push(d);
@@ -149,22 +143,23 @@ class Groups extends Component {
 
   exportToCSV = () => {
     const ws = XLSX.utils.json_to_sheet(this.createCSVdata());
-    const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
-    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
     downloadFile({
       data: excelBuffer,
-      fileName: 'grupos.xlsx',
-      fileType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
-    })
+      fileName: "grupos.xlsx",
+      fileType:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
   };
 
   exportToJson = () => {
     //e.preventDefault()
     downloadFile({
       data: JSON.stringify(this.createGroupsJsonData()),
-      fileName: 'grupos.json',
-      fileType: 'text/json',
-    })
+      fileName: "grupos.json",
+      fileType: "text/json",
+    });
   };
 
   handleAccept = () => {
@@ -181,6 +176,15 @@ class Groups extends Component {
 
   handleSelectAttributes = e => {
     this.setState({ selectedAttributes: e });
+  };
+
+  handleChangeFileType = t => {
+    this.setState({ fileType: t });
+  };
+
+  handleDownload = () => {
+    if (this.state.fileType === "csv") this.exportToCSV();
+    else if (this.state.fileType === "json") this.exportToJson();
   };
 
   render() {
@@ -205,7 +209,7 @@ class Groups extends Component {
         )}
         {this.state.subsetSelected === undefined && (
           <Tab.Container id="list-group-tabs-example" defaultActiveKey={1}>
-            <Row>
+            <Row className="mb-5">
               <Col md={3}>
                 <Nav className="flex-column">
                   {Object.keys(this.state.groups).map(t =>
@@ -280,12 +284,25 @@ class Groups extends Component {
               </Col>
             </Row>
             <Row className="mt-3 mb-5">
-              <Col className="d-flex align-items-start justify-content-start">
-                <Button onClick={this.exportToCSV}>Descargar Excel</Button>
+              <Col md={2}>
+                <Form>
+                  <Form.Label>Tipo de archivo</Form.Label>
+                  <Form.Select
+                    onChange={this.handleChangeFileType}
+                    defaultValue="csv"
+                  >
+                    <option>csv</option>
+                    <option>json</option>
+                  </Form.Select>
+                </Form>
               </Col>
-              <Col className="d-flex align-items-miedle justify-content-midle">
-                <Button onClick={this.exportToJson}>Descargar Json</Button>
+              <Col
+                md={2}
+                className="d-flex align-items-center justify-content-start mb-0"
+              >
+                <Button onClick={this.handleDownload}>Descargar</Button>
               </Col>
+
               <Col className="d-flex align-items-end justify-content-end">
                 <Button onClick={this.handleAccept}>Aceptar</Button>
               </Col>
@@ -324,9 +341,3 @@ class Groups extends Component {
 }
 
 export default withRouter(Groups);
-/*<Col className="d-flex align-items-start justify-content-start">
-                <Button onClick={this.exportToJson}>Descargar Json</Button>
-              </Col>*/
-/*<Col className="d-flex align-items-start justify-content-start">
-                <Button onClick={exportToCSV(this.createCSVdata(),"grupos")}>Descargar Excel</Button>
-              </Col>*/
