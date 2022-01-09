@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict
 import pandas as pd
 from pandas.core.frame import DataFrame
 from sklearn.preprocessing import StandardScaler
@@ -227,9 +227,7 @@ class DataProcessor:
     def data_performing(self, df: DataFrame) -> DataFrame:
         """
         df-> data frame(data de entrada completa)
-        interesting_atribute-> lista con el nombre de los atributos relevantes
-        relevant_weights -> relevancia de los atributos de interés
-        dict_parser_strategy -> indica el tipo de parser a ejcutar sobre un atributo
+        Procesa y normaliza los datos para ser utilizados en el algoritmo de agrupamiento
         """
         relevant_data = df
         relevant_data = self.__replace_bad_character__(relevant_data)

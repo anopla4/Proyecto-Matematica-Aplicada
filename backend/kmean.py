@@ -1,7 +1,4 @@
-import pandas as pd
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from sklearn.cluster import KMeans
-
 
 def get_groups_with_kmean(dataset, number_of_groups):
     """

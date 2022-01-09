@@ -1,6 +1,5 @@
 from data_processing import DataProcessor, to_dataFrame
 from kmean import get_groups_with_kmean
-from metaheuristic_solution import run, func
 
 def main_action(
     file_path: str,
