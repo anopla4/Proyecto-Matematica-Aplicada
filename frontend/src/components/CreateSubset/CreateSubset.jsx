@@ -138,14 +138,10 @@ class CreateSubset extends Component {
                         <Restriction
                           attribute={x}
                           type={this.props.attributesType[x]}
-                          handleMaxBound={e =>
-                            this.props.handleMaxBound(e, index)
-                          }
-                          handleMinBound={e =>
-                            this.props.handleMinBound(e, index)
-                          }
+                          handleMaxBound={e => this.props.handleMaxBound(e, x)}
+                          handleMinBound={e => this.props.handleMinBound(e, x)}
                           handleSelectValues={e =>
-                            this.props.handleSelectValues(e, index)
+                            this.props.handleSelectValues(e, x)
                           }
                           values={
                             this.props.attributesType[x] === "Nominal"
