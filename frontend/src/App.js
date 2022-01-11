@@ -7,6 +7,7 @@ import Data from "./components/Data/Data";
 import Groups from "./components/Groups/Groups";
 import Subset from "./components/Subset/Subset";
 import ScrollTop from "./components/ScrollTop/ScrollTop";
+import Guide from "./components/Guide/Guide";
 
 class App extends Component {
   render() {
@@ -19,6 +20,7 @@ class App extends Component {
               <Route path="/data" component={Data} />
               <Route path="/groups" component={Groups} />
               <Route path="/subset" component={Subset} />
+              <Route path="/guide" component={Guide} />
             </Switch>
           </Layout>
         </ScrollTop>

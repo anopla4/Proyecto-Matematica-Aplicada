@@ -21,7 +21,7 @@ const layout = props => {
           >
             <Nav className="mr-auto">
               <Nav.Link href="/data">Comenzar</Nav.Link>
-              <Nav.Link href="/guia">Guía</Nav.Link>
+              <Nav.Link href="/guide">Guía</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
