@@ -29,8 +29,8 @@ class AdvancedOptions extends Component {
               name="K-means"
             />
             <Form.Check
-              onClick={() => this.props.handleChangeMethod("kmean")}
-              checked={this.props.method === "methauristic"}
+              onClick={() => this.props.handleChangeMethod("metaheuristic")}
+              checked={this.props.method === "metaheuristic"}
               type="radio"
               id="metaheuristic"
               label="Metaheurística"
