@@ -22,7 +22,7 @@ class AdvancedOptions extends Component {
           <Form>
             <Form.Check
               onClick={() => this.props.handleChangeMethod("kmean")}
-              defaultChecked={this.props.method === "kmean"}
+              checked={this.props.method === "kmean"}
               type="radio"
               id="kmean"
               label="K-means"
