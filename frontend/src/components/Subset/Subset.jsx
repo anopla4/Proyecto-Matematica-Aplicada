@@ -371,6 +371,10 @@ class Subset extends Component {
     });
   };
 
+  handleChangeMethod = m => {
+    this.setState({ method: m });
+  };
+
   render() {
     const configs = {
       animate: true,
