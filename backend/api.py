@@ -7,6 +7,15 @@ from json import dumps
 from kmean import get_groups_with_kmean
 from metaheuristic_solution import run
 import os
+from typing import Optional
+from pydantic import BaseModel
+
+
+class Item(BaseModel):
+    subset: dict
+    types: dict
+    method: str
+
 
 app = FastAPI()
 
@@ -67,7 +76,7 @@ async def upload_file(file: UploadFile = File(...)):
 
 
 @app.post("/groups")
-def group_processing(subset: dict, types: dict, method="kmean"):
+def group_processing(item: Item):
     """
     subset -> dicc de la forma #sub(int)-> Obj donde:
         Obj = {
@@ -78,9 +87,15 @@ def group_processing(subset: dict, types: dict, method="kmean"):
         }
     types  -> diccionario con el tipo de datos de cada atributo para el parser
     """
-    group_performing = get_groups_with_kmean
-    if method == "metaheuristic":
+    subset = item.subset
+    types = item.types
+    method = item.method
+    if method == "kmean":
+        group_performing = get_groups_with_kmean
+    elif method == "metaheuristic":
         group_performing = run
+    else:
+        return None
     groups = main_action(
         file_path=file_location,
         subset=subset,

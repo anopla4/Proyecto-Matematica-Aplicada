@@ -1,12 +1,13 @@
 from data_processing import DataProcessor, to_dataFrame
 from kmean import get_groups_with_kmean
 
+
 def main_action(
     file_path: str,
     subset: dict,
     dataProcessor: DataProcessor = DataProcessor(),
-    group_performing = get_groups_with_kmean,
-    types: dict = None
+    group_performing=get_groups_with_kmean,
+    types: dict = None,
 ):
     """
     file_path -> localización del archivo de datos
@@ -31,7 +32,9 @@ def main_action(
         num_gr = int(obj["numberOfGroups"])
         students = obj["students"]
         attr = obj["attributes"]
-        relevant_data = dataProcessor.data_performing(data.loc[students, [k for k, _ in attr]])
+        relevant_data = dataProcessor.data_performing(
+            data.loc[students, [k for k, _ in attr]]
+        )
         data_w = dataProcessor.data_weighted(relevant_data, attr)
         groups = group_performing(data_w, num_gr)
         subgroups[sub] = {}
