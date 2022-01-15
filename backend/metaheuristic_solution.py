@@ -10,7 +10,7 @@ def run(data, num_groups):
     d = {i: [] for i in range(num_groups)}
     for i, item in enumerate(opt.st):
         d[item].append(i)
-    return d, val
+    return d
 
 
 def metaheuristic(
