@@ -21,8 +21,8 @@ export const Features = (props) => {
               </div>
               <div id="ia2" className='col-xs-6 col-md-3'>
                 <i className="fa fa-users"></i>
-                  <h3>Clousters</h3>
-                  <p>Utilizamos algoritmos de cloustering para ofrecerle la mejor solución</p>
+                  <h3>Clusters</h3>
+                  <p>Utilizamos algoritmos de clustering para ofrecerle la mejor solución</p>
               </div>
               
               <div id="statadistic" className='col-xs-6 col-md-3'>
